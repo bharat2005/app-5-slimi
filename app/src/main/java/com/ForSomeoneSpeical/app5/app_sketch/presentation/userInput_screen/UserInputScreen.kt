@@ -25,7 +25,9 @@ import com.ForSomeoneSpeical.app5.app_sketch.domain.model.DietCourse
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Gender
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.HealthProblem
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Meal
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.MuscleMakeUpVariant
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.PFC
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.UpdateCourseNVariantEvent
 
 @Composable
 fun UserInputScreen(
@@ -44,60 +46,84 @@ fun UserInputScreen(
             //Gender
             item {
                 Text("Gender")
-                Row { Gender.entries.forEach { gender -> Button(colors = ButtonDefaults.buttonColors(containerColor = if(uiState.gender == gender) Color.Green else Color.Gray),onClick = {viewModel.updateState(uiState.copy(gender = gender))}) { Text(gender.name) } } }
+                Row {
+                    Gender.entries.forEach { gender ->
+                        Button(
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (uiState.gender == gender) Color.Green else Color.Gray
+                            ),
+                            onClick = { viewModel.updateState(uiState.copy(gender = gender)) }) {
+                            Text(
+                                gender.name
+                            )
+                        }
+                    }
+                }
             }
 
             //Age
             item {
                 Text("Age")
-                TextField(value = uiState.age, onValueChange = {viewModel.updateState(state = uiState.copy(age = it))}) }
+                TextField(
+                    value = uiState.age,
+                    onValueChange = { viewModel.updateState(state = uiState.copy(age = it)) })
+            }
 
             //Height
             item {
                 Text("Height")
-                TextField(value = uiState.height, onValueChange = {viewModel.updateState(state = uiState.copy(height = it))}) }
+                TextField(
+                    value = uiState.height,
+                    onValueChange = { viewModel.updateState(state = uiState.copy(height = it)) })
+            }
 
             //CurrentWeight
             item {
                 Text("CurrentWeight")
-                TextField(value = uiState.currentWeight, onValueChange = {viewModel.updateState(state = uiState.copy(currentWeight = it))}) }
+                TextField(
+                    value = uiState.currentWeight,
+                    onValueChange = { viewModel.updateState(state = uiState.copy(currentWeight = it)) })
+            }
 
             //TargetWeight
             item {
                 Text("TargetWeight")
-                TextField(value = uiState.targetWeight, onValueChange = {viewModel.updateState(state = uiState.copy(targetWeight = it))}) }
+                TextField(
+                    value = uiState.targetWeight,
+                    onValueChange = { viewModel.updateState(state = uiState.copy(targetWeight = it)) })
+            }
 
             //Pace
             val currentWeight = uiState.currentWeight.toDoubleOrNull()
-            if(currentWeight != null){
+            if (currentWeight != null) {
                 item {
                     val slowPace = "%.1f".format(currentWeight * 0.005 * 4.345)
                     val fastPace = "%.1f".format(currentWeight * 0.01 * 4.345)
                     Text("Pace")
                     Button(
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if(uiState.pace == slowPace) Color.Green else Color.Gray
+                            containerColor = if (uiState.pace == slowPace) Color.Green else Color.Gray
                         ),
-                        onClick = {viewModel.updateState(uiState.copy(pace = slowPace))}) { Text("${slowPace} / month")}
+                        onClick = { viewModel.updateState(uiState.copy(pace = slowPace)) }) { Text("${slowPace} / month") }
                     Button(
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if(uiState.pace == fastPace) Color.Green else Color.Gray
+                            containerColor = if (uiState.pace == fastPace) Color.Green else Color.Gray
                         ),
-                        onClick = {viewModel.updateState(uiState.copy(pace = fastPace))}) { Text("${fastPace} / month")}
+                        onClick = { viewModel.updateState(uiState.copy(pace = fastPace)) }) { Text("${fastPace} / month") }
 
                 }
             }
 
             //ActivityLevel
-            item{
+            item {
                 Text("Activity Level")
                 ActivityLevel.entries.forEach { activityLevel ->
                     Button(
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if(uiState.activityLevel == activityLevel) Color.Green else Color.Gray
+                            containerColor = if (uiState.activityLevel == activityLevel) Color.Green else Color.Gray
                         ),
-                        onClick = {viewModel.updateState(uiState.copy(activityLevel = activityLevel))}
-                    ) {Text(activityLevel.name) }
+                        onClick = { viewModel.updateState(uiState.copy(activityLevel = activityLevel)) }
+                    ) { Text(activityLevel.name) }
                 }
             }
 
@@ -108,10 +134,10 @@ fun UserInputScreen(
                 HealthProblem.entries.forEach { healthProblem ->
                     Button(
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if(uiState.healthProblem == healthProblem) Color.Green else Color.Gray
+                            containerColor = if (uiState.healthProblem == healthProblem) Color.Green else Color.Gray
                         ),
-                        onClick = {viewModel.updateState(uiState.copy(healthProblem = healthProblem))}
-                    ) {Text(healthProblem.name) }
+                        onClick = { viewModel.updateState(uiState.copy(healthProblem = healthProblem)) }
+                    ) { Text(healthProblem.name) }
                 }
             }
 
@@ -121,17 +147,34 @@ fun UserInputScreen(
                 DietCourse.entries.forEach { dietCourse ->
                     Button(
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if(uiState.dietCourse == dietCourse) Color.Green else Color.Gray
+                            containerColor = if (uiState.dietCourse == dietCourse) Color.Green else Color.Gray
                         ),
-                        onClick = {viewModel.updateState(uiState.copy(dietCourse = dietCourse))}
-                    ) {Text(dietCourse.displayValue) }
+                        onClick = { viewModel.updateCourseNVariant(UpdateCourseNVariantEvent.UpdateDietCourse(dietCourse)) }
+                    ) { Text(dietCourse.displayValue) }
+                }
+            }
+
+
+            //Course Variants
+            item {
+                if (uiState.dietCourse == DietCourse.MUSCLE_MAKE_UP) {
+                    MuscleMakeUpVariant.entries.forEach { variant ->
+                        Button(
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (variant == uiState.muscleMakeUpVariant) Color.Yellow else Color.LightGray
+                            ),
+                            onClick = {
+                                viewModel.updateCourseNVariant(UpdateCourseNVariantEvent.UpdateMuscleMakeUpVariant(variant))
+                            }) { Text(variant.displayValue) }
+                    }
                 }
             }
 
 
 
+            //Final Plan
             item {
-                Button(onClick = viewModel::calculateFinalPlan) { Text("Calculate Final Plan")}
+                Button(onClick = viewModel::calculateFinalPlan) { Text("Calculate Final Plan") }
 
                 uiState.finalPlan?.let { finalPlan ->
                     PlanField(
@@ -178,11 +221,7 @@ fun UserInputScreen(
                     )
 
 
-
                 }
-
-
-
 
 
             }
@@ -196,11 +235,13 @@ fun UserInputScreen(
 
 @Composable
 fun PlanField(
-    label : String,
-    value : String,
+    label: String,
+    value: String,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(label)

@@ -19,10 +19,16 @@ enum class PFC{
     PROTEIN,FATS, CARBS
 }
 data class PFCRatio(val protein : Double, val fat : Double, val carbs : Double)
-enum class DietCourse(val displayValue : String, val pfcRatio : PFCRatio? ){
-    MUSCLE_MAKE_UP("Muscle Body Make Up Course", null),
-    EASY_CARB_RESTRICTION_DIET("Easy Carbohydrates Restriction Diet Course", PFCRatio(0.25,0.45,0.3)),
-    DIETARY_FIBER("Dietary Fiber Health Support Course", PFCRatio(0.25,0.2,0.55))
+enum class DietCourse(val displayValue : String ){
+    MUSCLE_MAKE_UP("Muscle Body Make Up Course"),
+    EASY_CARB_RESTRICTION_DIET("Easy Carbohydrates Restriction Diet Course"),
+    DIETARY_FIBER("Dietary Fiber Health Support Course")
+}
+
+enum class MuscleMakeUpVariant(val displayValue : String){
+    RECOMMENDED("Recommended"),
+    HIGH_IN_PROTEIN("High in Protein"),
+    LESS_IN_CARBOHYDRATES("Less in Carbs")
 }
 enum class Meal{
     BREAKFAST, LUNCH, DINNER, SNACK
@@ -36,6 +42,13 @@ data class FinalPlan(
     val dailyPFCTargetInGrams : Map<PFC, Int>
 )
 
+
+sealed class UpdateCourseNVariantEvent{
+    data class UpdateDietCourse(val dietCourse : DietCourse) : UpdateCourseNVariantEvent()
+    data class UpdateMuscleMakeUpVariant(val variant : MuscleMakeUpVariant) : UpdateCourseNVariantEvent()
+
+}
+
 data class UserInputUiState(
     val gender :Gender? = null,
     val age : String = "",
@@ -46,6 +59,7 @@ data class UserInputUiState(
     val activityLevel : ActivityLevel? = null,
     val healthProblem : HealthProblem? = null,
     val dietCourse : DietCourse? = null,
+    val muscleMakeUpVariant : MuscleMakeUpVariant = MuscleMakeUpVariant.RECOMMENDED,
     val finalPlan : FinalPlan? = null,
 
-)
+    )

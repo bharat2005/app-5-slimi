@@ -7,7 +7,10 @@ import com.ForSomeoneSpeical.app5.app_sketch.domain.model.FinalPlan
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Gender
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.HealthProblem
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Meal
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.MuscleMakeUpVariant
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.PFC
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.PFCRatio
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.UpdateCourseNVariantEvent
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.UserInputUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +33,23 @@ class UserInputViewModel @Inject constructor(
     }
 
 
+    fun updateCourseNVariant(event: UpdateCourseNVariantEvent){
+        when(event){
+            is UpdateCourseNVariantEvent.UpdateDietCourse -> {
+                _uiState.update { it.copy(
+                    dietCourse = event.dietCourse,
+                    muscleMakeUpVariant = MuscleMakeUpVariant.RECOMMENDED
+                ) }
+            }
+            is UpdateCourseNVariantEvent.UpdateMuscleMakeUpVariant -> {
+                _uiState.update { it.copy(
+                    muscleMakeUpVariant = event.variant
+                ) }
+            }
+        }
+    }
+
+
     fun calculateFinalPlan() {
         val state = uiState.value
         val gender = state.gender ?: return
@@ -39,7 +59,6 @@ class UserInputViewModel @Inject constructor(
         val targetWeight = state.targetWeight.toDoubleOrNull() ?: return
         val pace = state.pace.toDoubleOrNull() ?: return
         val activityLevel = state.activityLevel ?: return
-        val healthProblem = state.healthProblem ?: return
         val dietCourse = state.dietCourse ?: return
 
 
@@ -70,33 +89,79 @@ class UserInputViewModel @Inject constructor(
         //Calculate Daily Calories Burn Target
         val dailyCaloriesBurnTarget = (tdee - bmr).roundToInt()
 
-        //Calculate PFC Target in Grams
-        val proteinInGrams : Int
-        val fatsInGrams : Int
-        val carbsInGrams : Int
 
-        if(dietCourse == DietCourse.MUSCLE_MAKE_UP){
-            proteinInGrams = (currentWeight * 2.0).roundToInt()
-            val proteinCalories = (proteinInGrams * 4.0).roundToInt()
+        //Calculate Daily Pfc Target in Grams
+        val dailyPFCTargetInGrams = when(dietCourse){
+            DietCourse.MUSCLE_MAKE_UP -> {
+                when(state.muscleMakeUpVariant){
+                    MuscleMakeUpVariant.RECOMMENDED -> {
+                        val proteinInGrams = (currentWeight * 2.0).roundToInt()
+                        val proteinCalories = (proteinInGrams * 4.0).roundToInt()
 
+                        val fatsCalories = (dailyCaloriesIntakeTarget * 0.25).roundToInt()
+                        val fatsInGram = (fatsCalories / 9.0).roundToInt()
 
-            val fatCalories = (dailyCaloriesIntakeTarget * 0.25).roundToInt()
-            fatsInGrams = (fatCalories / 9.0).roundToInt()
+                        val remainingCalories = dailyCaloriesIntakeTarget - proteinCalories - fatsCalories
+                        val carbsInGrams = (remainingCalories / 4.0).roundToInt()
 
-            val remainingCalories = dailyCaloriesIntakeTarget - proteinCalories - fatCalories
-            carbsInGrams = (remainingCalories / 4.0).roundToInt()
-        } else
-        {
-            proteinInGrams = ((dailyCaloriesIntakeTarget * dietCourse.pfcRatio!!.protein) / 4).roundToInt()
-            fatsInGrams = ((dailyCaloriesIntakeTarget * dietCourse.pfcRatio.fat) / 9).roundToInt()
-            carbsInGrams = ((dailyCaloriesIntakeTarget * dietCourse.pfcRatio.carbs) / 4).roundToInt()
+                        mapOf(
+                            PFC.PROTEIN to proteinInGrams,
+                            PFC.FATS to fatsInGram,
+                            PFC.CARBS to carbsInGrams
+                        )
+
+                    }
+                    MuscleMakeUpVariant.HIGH_IN_PROTEIN -> {
+                        val proteinInGrams = (currentWeight * 2.3).roundToInt()
+                        val proteinCalories = (proteinInGrams * 4.0).roundToInt()
+
+                        val fatsCalories = (dailyCaloriesIntakeTarget * 0.25).roundToInt()
+                        val fatsInGram = (fatsCalories / 9.0).roundToInt()
+
+                        val remainingCalories = dailyCaloriesIntakeTarget - proteinCalories - fatsCalories
+                        val carbsInGrams = (remainingCalories / 4.0).roundToInt()
+
+                        mapOf(
+                            PFC.PROTEIN to proteinInGrams,
+                            PFC.FATS to fatsInGram,
+                            PFC.CARBS to carbsInGrams
+                        )
+                    }
+                    MuscleMakeUpVariant.LESS_IN_CARBOHYDRATES -> {
+                        val proteinInGrams = (currentWeight * 2.0).roundToInt()
+                        val proteinCalories = (proteinInGrams * 4.0).roundToInt()
+
+                        val fatsCalories = (dailyCaloriesIntakeTarget * 0.35).roundToInt()
+                        val fatsInGram = (fatsCalories / 9.0).roundToInt()
+
+                        val remainingCalories = dailyCaloriesIntakeTarget - proteinCalories - fatsCalories
+                        val carbsInGrams = (remainingCalories / 4.0).roundToInt()
+
+                        mapOf(
+                            PFC.PROTEIN to proteinInGrams,
+                            PFC.FATS to fatsInGram,
+                            PFC.CARBS to carbsInGrams
+                        )
+                    }
+                }
+            }
+            DietCourse.EASY_CARB_RESTRICTION_DIET -> {
+                val pfcRatio = PFCRatio(0.25, 0.45, 0.3)
+                mapOf(
+                    PFC.PROTEIN to ((dailyCaloriesIntakeTarget * pfcRatio.protein) / 4).roundToInt(),
+                    PFC.FATS to ((dailyCaloriesIntakeTarget * pfcRatio.fat) / 9).roundToInt(),
+                    PFC.CARBS to ((dailyCaloriesIntakeTarget * pfcRatio.carbs) / 4).roundToInt(),
+                )
+            }
+            DietCourse.DIETARY_FIBER -> {
+                val pfcRatio = PFCRatio(0.25, 0.2, 0.55)
+                mapOf(
+                    PFC.PROTEIN to ((dailyCaloriesIntakeTarget * pfcRatio.protein) / 4).roundToInt(),
+                    PFC.FATS to ((dailyCaloriesIntakeTarget * pfcRatio.fat) / 9).roundToInt(),
+                    PFC.CARBS to ((dailyCaloriesIntakeTarget * pfcRatio.carbs) / 4).roundToInt(),
+                )
+            }
         }
-
-        val dailyPFCTargetInGrams = mapOf(
-            PFC.PROTEIN to proteinInGrams,
-            PFC.FATS  to fatsInGrams,
-            PFC.CARBS to carbsInGrams,
-        )
 
         _uiState.update {
             it.copy(
