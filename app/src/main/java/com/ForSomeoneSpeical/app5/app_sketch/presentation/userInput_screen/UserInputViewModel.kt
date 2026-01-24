@@ -71,10 +71,31 @@ class UserInputViewModel @Inject constructor(
         val dailyCaloriesBurnTarget = (tdee - bmr).roundToInt()
 
         //Calculate PFC Target in Grams
+        val proteinInGrams : Int
+        val fatsInGrams : Int
+        val carbsInGrams : Int
+
+        if(dietCourse == DietCourse.MUSCLE_MAKE_UP){
+            proteinInGrams = (currentWeight * 2.0).roundToInt()
+            val proteinCalories = (proteinInGrams * 4.0).roundToInt()
+
+
+            val fatCalories = (dailyCaloriesIntakeTarget * 0.25).roundToInt()
+            fatsInGrams = (fatCalories / 9.0).roundToInt()
+
+            val remainingCalories = dailyCaloriesIntakeTarget - proteinCalories - fatCalories
+            carbsInGrams = (remainingCalories / 4.0).roundToInt()
+        } else
+        {
+            proteinInGrams = ((dailyCaloriesIntakeTarget * dietCourse.pfcRatio!!.protein) / 4).roundToInt()
+            fatsInGrams = ((dailyCaloriesIntakeTarget * dietCourse.pfcRatio.fat) / 9).roundToInt()
+            carbsInGrams = ((dailyCaloriesIntakeTarget * dietCourse.pfcRatio.carbs) / 4).roundToInt()
+        }
+
         val dailyPFCTargetInGrams = mapOf(
-            PFC.PROTEIN to ((dailyCaloriesIntakeTarget * dietCourse.pfcRatio.protein) / 4).roundToInt(),
-            PFC.FATS  to ((dailyCaloriesIntakeTarget * dietCourse.pfcRatio.fat) / 9).roundToInt(),
-            PFC.CARBS to ((dailyCaloriesIntakeTarget * dietCourse.pfcRatio.carbs) / 4).roundToInt(),
+            PFC.PROTEIN to proteinInGrams,
+            PFC.FATS  to fatsInGrams,
+            PFC.CARBS to carbsInGrams,
         )
 
         _uiState.update {

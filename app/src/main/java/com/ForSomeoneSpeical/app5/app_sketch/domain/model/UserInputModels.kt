@@ -19,8 +19,8 @@ enum class PFC{
     PROTEIN,FATS, CARBS
 }
 data class PFCRatio(val protein : Double, val fat : Double, val carbs : Double)
-enum class DietCourse(val displayValue : String, val pfcRatio : PFCRatio ){
-    MUSCLE_MAKE_UP("Muscle Body Make Up Course", PFCRatio(0.3,0.3,0.4)),
+enum class DietCourse(val displayValue : String, val pfcRatio : PFCRatio? ){
+    MUSCLE_MAKE_UP("Muscle Body Make Up Course", null),
     EASY_CARB_RESTRICTION_DIET("Easy Carbohydrates Restriction Diet Course", PFCRatio(0.25,0.45,0.3)),
     DIETARY_FIBER("Dietary Fiber Health Support Course", PFCRatio(0.25,0.2,0.55))
 }
