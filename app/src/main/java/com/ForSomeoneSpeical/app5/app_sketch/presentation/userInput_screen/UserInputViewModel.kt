@@ -65,13 +65,13 @@ class UserInputViewModel @Inject constructor(
         //Calculate BMR
         val bmr = if(gender == Gender.MALE){
             (currentWeight * 10) + (height * 6.25) - (age * 5) + 5
-        } else {
+        } else
+        {
             (currentWeight * 10) + (height * 6.25) - (age * 5) - 161
         }
 
         //Calculate TDEE
         val tdee = bmr * activityLevel.factor
-
 
         //Calculate Daily Calories Intake Target
         val dailyAdjustment = ((pace * 7700) / 30.4)
@@ -89,7 +89,6 @@ class UserInputViewModel @Inject constructor(
         //Calculate Daily Calories Burn Target
         val dailyCaloriesBurnTarget = (tdee - bmr).roundToInt()
 
-
         //Calculate Daily Pfc Target in Grams
         val dailyPFCTargetInGrams = when(dietCourse){
             DietCourse.MUSCLE_MAKE_UP -> {
@@ -104,7 +103,7 @@ class UserInputViewModel @Inject constructor(
                         val remainingCalories = dailyCaloriesIntakeTarget - proteinCalories - fatsCalories
                         val carbsInGrams = (remainingCalories / 4.0).roundToInt()
 
-                        mapOf(
+                        mutableMapOf(
                             PFC.PROTEIN to proteinInGrams,
                             PFC.FATS to fatsInGram,
                             PFC.CARBS to carbsInGrams
@@ -121,7 +120,7 @@ class UserInputViewModel @Inject constructor(
                         val remainingCalories = dailyCaloriesIntakeTarget - proteinCalories - fatsCalories
                         val carbsInGrams = (remainingCalories / 4.0).roundToInt()
 
-                        mapOf(
+                        mutableMapOf(
                             PFC.PROTEIN to proteinInGrams,
                             PFC.FATS to fatsInGram,
                             PFC.CARBS to carbsInGrams
@@ -137,7 +136,7 @@ class UserInputViewModel @Inject constructor(
                         val remainingCalories = dailyCaloriesIntakeTarget - proteinCalories - fatsCalories
                         val carbsInGrams = (remainingCalories / 4.0).roundToInt()
 
-                        mapOf(
+                        mutableMapOf(
                             PFC.PROTEIN to proteinInGrams,
                             PFC.FATS to fatsInGram,
                             PFC.CARBS to carbsInGrams
@@ -147,7 +146,7 @@ class UserInputViewModel @Inject constructor(
             }
             DietCourse.EASY_CARB_RESTRICTION_DIET -> {
                 val pfcRatio = PFCRatio(0.25, 0.45, 0.3)
-                mapOf(
+                mutableMapOf(
                     PFC.PROTEIN to ((dailyCaloriesIntakeTarget * pfcRatio.protein) / 4).roundToInt(),
                     PFC.FATS to ((dailyCaloriesIntakeTarget * pfcRatio.fat) / 9).roundToInt(),
                     PFC.CARBS to ((dailyCaloriesIntakeTarget * pfcRatio.carbs) / 4).roundToInt(),
@@ -155,13 +154,30 @@ class UserInputViewModel @Inject constructor(
             }
             DietCourse.DIETARY_FIBER -> {
                 val pfcRatio = PFCRatio(0.25, 0.2, 0.55)
-                mapOf(
+                mutableMapOf(
                     PFC.PROTEIN to ((dailyCaloriesIntakeTarget * pfcRatio.protein) / 4).roundToInt(),
                     PFC.FATS to ((dailyCaloriesIntakeTarget * pfcRatio.fat) / 9).roundToInt(),
                     PFC.CARBS to ((dailyCaloriesIntakeTarget * pfcRatio.carbs) / 4).roundToInt(),
                 )
             }
         }
+
+
+        //Add SafeGuards
+        val minProteinGrams = (currentWeight * 1.2).roundToInt()
+        if(dailyPFCTargetInGrams[PFC.PROTEIN]!! < minProteinGrams){
+            dailyPFCTargetInGrams[PFC.PROTEIN] = minProteinGrams
+        }
+        val minFatsCalories = (dailyCaloriesIntakeTarget * 0.2).roundToInt()
+        val minFatsGrams = (minFatsCalories / 9.0).roundToInt()
+        if(dailyPFCTargetInGrams[PFC.FATS]!! < minFatsGrams){
+            dailyPFCTargetInGrams[PFC.FATS] = minFatsGrams
+        }
+        val minCarbsGrams = 100
+        if(dailyPFCTargetInGrams[PFC.CARBS]!! < minCarbsGrams){
+            dailyPFCTargetInGrams[PFC.CARBS] = minCarbsGrams
+        }
+
 
         _uiState.update {
             it.copy(

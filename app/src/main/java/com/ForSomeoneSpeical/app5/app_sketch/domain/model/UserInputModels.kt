@@ -61,5 +61,4 @@ data class UserInputUiState(
     val dietCourse : DietCourse? = null,
     val muscleMakeUpVariant : MuscleMakeUpVariant = MuscleMakeUpVariant.RECOMMENDED,
     val finalPlan : FinalPlan? = null,
-
     )
