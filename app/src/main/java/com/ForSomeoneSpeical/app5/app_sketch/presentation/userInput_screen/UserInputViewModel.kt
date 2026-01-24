@@ -173,10 +173,6 @@ class UserInputViewModel @Inject constructor(
         if(dailyPFCTargetInGrams[PFC.FATS]!! < minFatsGrams){
             dailyPFCTargetInGrams[PFC.FATS] = minFatsGrams
         }
-        val minCarbsGrams = 100
-        if(dailyPFCTargetInGrams[PFC.CARBS]!! < minCarbsGrams){
-            dailyPFCTargetInGrams[PFC.CARBS] = minCarbsGrams
-        }
 
 
         _uiState.update {
