@@ -61,4 +61,8 @@ data class UserInputUiState(
     val dietCourse : DietCourse? = null,
     val muscleMakeUpVariant : MuscleMakeUpVariant = MuscleMakeUpVariant.RECOMMENDED,
     val finalPlan : FinalPlan? = null,
+
+    val isLoading : Boolean = false,
+    val isSuccess : Boolean =false,
+    val hasError : String? = null,
     )

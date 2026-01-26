@@ -1,23 +1,28 @@
 package com.ForSomeoneSpeical.app5.app_sketch.presentation.userInput_screen
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.ActivityLevel
@@ -31,9 +36,17 @@ import com.ForSomeoneSpeical.app5.app_sketch.domain.model.UpdateCourseNVariantEv
 
 @Composable
 fun UserInputScreen(
-    viewModel: UserInputViewModel = hiltViewModel()
+    viewModel: UserInputViewModel = hiltViewModel(),
+    onNavigateToTrack : () ->  Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+
+    LaunchedEffect(uiState.isSuccess) {
+        if(uiState.isSuccess){
+            onNavigateToTrack()
+        }
+    }
 
     Scaffold { paddingValues ->
         LazyColumn(
@@ -150,7 +163,13 @@ fun UserInputScreen(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (uiState.dietCourse == dietCourse) Color.Green else Color.Gray
                         ),
-                        onClick = { viewModel.updateCourseNVariant(UpdateCourseNVariantEvent.UpdateDietCourse(dietCourse)) }
+                        onClick = {
+                            viewModel.updateCourseNVariant(
+                                UpdateCourseNVariantEvent.UpdateDietCourse(
+                                    dietCourse
+                                )
+                            )
+                        }
                     ) { Text(dietCourse.displayValue) }
                 }
             }
@@ -165,12 +184,15 @@ fun UserInputScreen(
                                 containerColor = if (variant == uiState.muscleMakeUpVariant) Color.Yellow else Color.LightGray
                             ),
                             onClick = {
-                                viewModel.updateCourseNVariant(UpdateCourseNVariantEvent.UpdateMuscleMakeUpVariant(variant))
+                                viewModel.updateCourseNVariant(
+                                    UpdateCourseNVariantEvent.UpdateMuscleMakeUpVariant(
+                                        variant
+                                    )
+                                )
                             }) { Text(variant.displayValue) }
                     }
                 }
             }
-
 
 
             //Final Plan
@@ -228,6 +250,33 @@ fun UserInputScreen(
             }
 
 
+            item {
+                Button(
+                    enabled = uiState.finalPlan != null,
+                    onClick = { viewModel.onSave() }
+                ) { Text("Save") }
+            }
+
+        }
+
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize().pointerInput(Unit) {},
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        if (uiState.hasError != null) {
+            AlertDialog(
+                onDismissRequest = {viewModel.updateState(uiState.copy(hasError = null))},
+                title = {Text("Error")},
+                text = { Text(uiState.hasError ?: "Something went worng") },
+                confirmButton = {
+                    Button(onClick = {viewModel.updateState(uiState.copy(hasError = null))}) { Text("OK")}
+                }
+            )
         }
     }
 

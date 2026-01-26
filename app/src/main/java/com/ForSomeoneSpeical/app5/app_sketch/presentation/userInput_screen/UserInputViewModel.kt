@@ -1,6 +1,7 @@
 package com.ForSomeoneSpeical.app5.app_sketch.presentation.userInput_screen
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.ActivityLevel
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.DietCourse
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.FinalPlan
@@ -12,17 +13,19 @@ import com.ForSomeoneSpeical.app5.app_sketch.domain.model.PFC
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.PFCRatio
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.UpdateCourseNVariantEvent
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.UserInputUiState
+import com.ForSomeoneSpeical.app5.app_sketch.domain.repo.AuthReporistory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
 
 @HiltViewModel
 class UserInputViewModel @Inject constructor(
-
+    private val authReporistory: AuthReporistory
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UserInputUiState())
@@ -187,5 +190,24 @@ class UserInputViewModel @Inject constructor(
             )
         }
     }
+
+    fun onSave(){
+        if(uiState.value.finalPlan == null)return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            authReporistory.saveUserData(uiState.value.finalPlan!!).collect { result ->
+                result.fold(
+                    onSuccess = {
+                        _uiState.update { it.copy(isLoading = false, isSuccess = true) }
+                    },
+                    onFailure = { e ->
+                        _uiState.update { it.copy(isLoading = false, hasError = e.message) }
+                    }
+                )
+            }
+        }
+    }
+
+
 
 }
