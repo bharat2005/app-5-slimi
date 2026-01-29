@@ -16,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,11 +36,8 @@ fun UserLogScreen(
 ) {
     var mealType by remember { mutableStateOf(Meal.BREAKFAST) }
     var showDialog by remember { mutableStateOf(false) }
-
     var searchQuery by remember { mutableStateOf("") }
-    var isQuerySearchLoading by remember { mutableStateOf(false) }
-
-    val scope = rememberCoroutineScope()
+    val uiState by viewModel.uiState.collectAsState()
 
 
 
@@ -67,8 +65,6 @@ fun UserLogScreen(
 
 
     if(showDialog){
-
-
         AlertDialog(
             onDismissRequest = {},
             title = {Text(mealType.name)},
@@ -83,27 +79,22 @@ fun UserLogScreen(
                     )
 
                     Button(onClick = {
-                        scope.launch {
-                            isQuerySearchLoading = true
-                            delay(3000)
-                            isQuerySearchLoading = false
-                        }
-
+                        viewModel.searchFoodItems(searchQuery)
                     }) {Text("Search") }
 
 
-                    if(isQuerySearchLoading){
+                    if(uiState.isSearching){
                         CircularProgressIndicator()
                     } else {
                         LazyColumn(
                             modifier = Modifier.fillMaxWidth().height(280.dp)
                         )
                         {
-                            itemsIndexed(List(20) { it }) { index, item ->
+                            itemsIndexed(uiState.searchedFoodItems) { index, item ->
                                 Surface(
                                     modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
                                 ) {
-                                    Text(item.toString())
+                                    Text(item.food_name)
                                 }
                             }
 
