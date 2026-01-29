@@ -79,7 +79,7 @@ fun UserLogScreen(
                     )
 
                     Button(onClick = {
-                        viewModel.searchFoodItems(searchQuery)
+                        viewModel.getPost()
                     }) {Text("Search") }
 
 
@@ -90,13 +90,13 @@ fun UserLogScreen(
                             modifier = Modifier.fillMaxWidth().height(280.dp)
                         )
                         {
-                            itemsIndexed(uiState.searchedFoodItems) { index, item ->
-                                Surface(
-                                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
-                                ) {
-                                    Text(item.food_name)
-                                }
-                            }
+//                            itemsIndexed(uiState.searchedFoodItems) { index, item ->
+//                                Surface(
+//                                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
+//                                ) {
+//                                    Text(item.food_name)
+//                                }
+//                            }
 
                         }
                     }

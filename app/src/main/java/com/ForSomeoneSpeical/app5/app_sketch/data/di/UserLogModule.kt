@@ -11,9 +11,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class UserLogModule {
+
     @Binds
     @Singleton
     abstract fun bindUserLogRepository(
         iml : UserLogRepositoryIml
     ) : UserLogRepository
 }
+
+
