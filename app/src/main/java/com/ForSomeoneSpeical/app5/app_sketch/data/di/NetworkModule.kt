@@ -47,7 +47,7 @@ object NetworkModule {
         moshi : Moshi
     ) : Retrofit{
         return Retrofit.Builder()
-            .baseUrl("https://jsonplaceholder.typicode.com/")
+            .baseUrl("https://api.nal.usda.gov/fdc/v1/")
             .client(okHttp)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()

@@ -2,6 +2,7 @@ package com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,6 +39,12 @@ fun UserLogScreen(
     var showDialog by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     val uiState by viewModel.uiState.collectAsState()
+
+    val filteredList = remember(uiState.seletedCategory, uiState.searchedFoodItems) {
+        uiState.searchedFoodItems.foods.filter {
+            it.dataType == uiState.seletedCategory.name
+        }
+    }
 
 
 
@@ -79,24 +86,35 @@ fun UserLogScreen(
                     )
 
                     Button(onClick = {
-                        viewModel.getPost()
+                        viewModel.searchFoodItems(searchQuery)
                     }) {Text("Search") }
+
+
+
 
 
                     if(uiState.isSearching){
                         CircularProgressIndicator()
                     } else {
+                        Row {
+                            FoodCategory.entries.forEach { category ->
+                                Button(
+                                    enabled = uiState.seletedCategory != category,
+                                    onClick = {viewModel.updateSelectedCategory(category)}
+                                ) { Text(category.displayName)}
+                            }
+                        }
                         LazyColumn(
                             modifier = Modifier.fillMaxWidth().height(280.dp)
                         )
                         {
-//                            itemsIndexed(uiState.searchedFoodItems) { index, item ->
-//                                Surface(
-//                                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
-//                                ) {
-//                                    Text(item.food_name)
-//                                }
-//                            }
+                            itemsIndexed(filteredList) { index, item ->
+                                Surface(
+                                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
+                                ) {
+                                    Text(item.description)
+                                }
+                            }
 
                         }
                     }
