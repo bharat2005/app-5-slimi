@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Meal
+import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.MealDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -38,105 +39,55 @@ fun UserLogScreen(
 ) {
     var mealType by remember { mutableStateOf(Meal.BREAKFAST) }
     var showDialog by remember { mutableStateOf(false) }
-    var searchQuery by remember { mutableStateOf("") }
     val uiState by viewModel.uiState.collectAsState()
 
-    val filteredList = remember(uiState.seletedCategory, uiState.searchedFoodItems) {
-        uiState.searchedFoodItems.foods.filter {
-            it.dataType == uiState.seletedCategory.displayName
-        }
-    }
-
-
-    Log.d("FoodList", "${filteredList} --- ${uiState.searchedFoodItems}")
 
 
 
 
 
-    Scaffold {  paddingValues ->
+    Scaffold { paddingValues ->
         Box(
-            modifier = Modifier.fillMaxSize().padding(paddingValues),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
 
-            Button(
-                onClick = {
-                    mealType = Meal.LUNCH
-                    showDialog = true
+            Column {
+                Meal.entries.forEach { meal ->
+                    Button(
+                        onClick = {
+                            mealType = meal
+                            showDialog = true
+                        }
+                    ) {
+                        Text(meal.name)
+                    }
                 }
-            ) {
-                Text("Lunch")
             }
+
+
 
 
         }
     }
 
 
-    if(showDialog){
-        AlertDialog(
-            onDismissRequest = {},
-            title = {Text(mealType.name)},
-            text = {
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = searchQuery,
-                        onValueChange = {searchQuery = it}
-                    )
-
-                    Button(onClick = {
-                        viewModel.searchFoodItems(searchQuery)
-                    }) {Text("Search") }
-
-
-
-
-
-                    if(uiState.isSearching){
-                        CircularProgressIndicator()
-                    } else {
-                        Column {
-                            FoodCategory.entries.forEach { category ->
-                                Button(
-                                    enabled = uiState.seletedCategory != category,
-                                    onClick = {viewModel.updateSelectedCategory(category)}
-                                ) { Text(category.displayName)}
-                            }
-                        }
-                        LazyColumn(
-                            modifier = Modifier.fillMaxWidth().height(280.dp)
-                        )
-                        {
-                            itemsIndexed(filteredList) { index, item ->
-                                Surface(
-                                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
-                                ) {
-                                    val foodName = item.description
-                                    val foodBrand = if(!item.brandOwner.isNullOrEmpty()) "(${item.brandOwner})" else ""
-                                    val servingString = item.servingSize?.let { "(${String.format("%.2f",it)} ${item.servingSizeUnit}) (${item.householdServingFullText})" } ?: "(per 100g)"
-                                    val kcalString = item.foodNutrients.find { it.unitName == "KCAL" }?.let { "${it.value} ${it.unitName.toLowerCase()}" }
-
-                                    Text("${foodName} ${foodBrand} ${servingString} ${kcalString}")
-                                }
-                            }
-
-                        }
-                    }
-                }
-
+    if (showDialog) {
+        MealDialog(
+            mealType = mealType,
+            seletedCategory = uiState.seletedCategory,
+            searchedFoodItems = uiState.searchedFoodItems,
+            onSearchClick = viewModel::searchFoodItems,
+            isSearching = uiState.isSearching,
+            onCategoryClick = viewModel::updateSelectedCategory,
+            onDissmissDialog = {
+                showDialog = false
             },
-            confirmButton = {
-                Button(onClick = {
-                    showDialog = false
-                }) { Text("Confirm")}
-
-            }
         )
     }
+
 
 }
 
