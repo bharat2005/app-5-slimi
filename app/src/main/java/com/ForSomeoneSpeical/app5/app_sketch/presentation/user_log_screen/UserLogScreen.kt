@@ -1,5 +1,6 @@
 package com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,10 +43,12 @@ fun UserLogScreen(
 
     val filteredList = remember(uiState.seletedCategory, uiState.searchedFoodItems) {
         uiState.searchedFoodItems.foods.filter {
-            it.dataType == uiState.seletedCategory.name
+            it.dataType == uiState.seletedCategory.displayName
         }
     }
 
+
+    Log.d("FoodList", "${filteredList} --- ${uiState.searchedFoodItems}")
 
 
 
@@ -96,7 +99,7 @@ fun UserLogScreen(
                     if(uiState.isSearching){
                         CircularProgressIndicator()
                     } else {
-                        Row {
+                        Column {
                             FoodCategory.entries.forEach { category ->
                                 Button(
                                     enabled = uiState.seletedCategory != category,
@@ -112,7 +115,7 @@ fun UserLogScreen(
                                 Surface(
                                     modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
                                 ) {
-                                    Text(item.description)
+                                    Text("${item.description} ${if(!item.brandOwner.isNullOrEmpty()) "(${item.brandOwner})" else ""} ${item.foodNutrients}")
                                 }
                             }
 

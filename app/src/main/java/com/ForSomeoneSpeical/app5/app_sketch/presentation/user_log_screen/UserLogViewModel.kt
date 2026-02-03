@@ -16,7 +16,7 @@ import javax.inject.Inject
 enum class FoodCategory(val displayName : String) {
     FOUNDATION("Foundation"),
     SR_LEGACY("SR Legacy"),
-    SURVEY_FNDDS("Survey FNDDS"),
+    SURVEY_FNDDS("Survey (FNDDS)"),
     BRANDED("Branded"),
 
 }
