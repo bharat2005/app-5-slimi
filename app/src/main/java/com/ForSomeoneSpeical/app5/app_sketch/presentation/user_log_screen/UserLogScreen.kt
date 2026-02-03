@@ -115,7 +115,9 @@ fun UserLogScreen(
                                 Surface(
                                     modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
                                 ) {
-                                    Text("${item.description} ${if(!item.brandOwner.isNullOrEmpty()) "(${item.brandOwner})" else ""} ${item.foodNutrients}")
+                                    val kcalString = item.foodNutrients.find { it.unitName == "KCAL" }?.let { "${it.value} ${it.unitName.toLowerCase()}" }
+                                    val servingString = item.servingSize?.let { "${it} ${item.servingSizeUnit} per serving" }
+                                    Text("${item.description} ${if(!item.brandOwner.isNullOrEmpty()) "(${item.brandOwner})" else ""} ${servingString} ${kcalString}")
                                 }
                             }
 

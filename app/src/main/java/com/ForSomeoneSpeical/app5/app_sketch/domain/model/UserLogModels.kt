@@ -6,7 +6,9 @@ data class USDAFoodItem(
     val description : String =  "BROCCOLI",
     val foodCode : String =  "string",
     val brandOwner : String? = null,
-    val foodNutrients : List<FoodNutrient> = emptyList()
+    val foodNutrients : List<FoodNutrient> = emptyList(),
+    val servingSize : Double? = null,
+    val servingSizeUnit : String? = null,
 )
 
 
@@ -15,10 +17,8 @@ data class USDAResponse(
 )
 
 
-
-
 data class FoodNutrient(
-    val name: String =  "Iron, Fe",
-    val amount: Double =  0.53,
-    val unitName: String = "mg",
+    val nutrientName: String =  "",
+    val value: Double = 0.0,
+    val unitName: String = "",
 )
