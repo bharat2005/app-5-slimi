@@ -84,6 +84,7 @@ fun UserLogScreen(
             onCategoryClick = viewModel::updateSelectedCategory,
             onDissmissDialog = {
                 showDialog = false
+                viewModel.resetUiState()
             },
         )
     }

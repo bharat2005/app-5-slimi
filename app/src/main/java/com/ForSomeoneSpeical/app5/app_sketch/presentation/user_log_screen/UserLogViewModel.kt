@@ -41,6 +41,10 @@ class UserLogViewModel @Inject constructor(
         _uiState.update { it.copy(seletedCategory = category) }
     }
 
+    fun resetUiState(){
+        _uiState.update { UserLogState() }
+    }
+
 
     fun searchFoodItems(query : String){
         _uiState.update { it.copy(isSearching = true) }
