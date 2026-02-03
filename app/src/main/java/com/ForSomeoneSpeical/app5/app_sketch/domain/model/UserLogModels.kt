@@ -9,6 +9,7 @@ data class USDAFoodItem(
     val foodNutrients : List<FoodNutrient> = emptyList(),
     val servingSize : Double? = null,
     val servingSizeUnit : String? = null,
+    val householdServingFullText : String? = null,
 )
 
 
