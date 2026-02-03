@@ -10,7 +10,12 @@ data class USDAFoodItem(
     val servingSize : Double? = null,
     val servingSizeUnit : String? = null,
     val householdServingFullText : String? = null,
+
+    val mealType : String? = null,
+
 )
+
+
 
 
 data class USDAResponse(

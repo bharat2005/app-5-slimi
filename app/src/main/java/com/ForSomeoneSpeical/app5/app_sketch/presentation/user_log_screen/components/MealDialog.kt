@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Meal
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAFoodItem
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAResponse
 import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.FoodCategory
 
@@ -31,6 +32,7 @@ fun MealDialog(
     onSearchClick : (String) -> Unit,
     isSearching : Boolean,
     onCategoryClick : (FoodCategory) -> Unit,
+    onLogFoodItem : (USDAFoodItem) -> Unit,
     onDissmissDialog : () -> Unit,
 
     ) {
@@ -80,7 +82,10 @@ fun MealDialog(
                         {
                             itemsIndexed(filteredList) { index, item ->
                                 Surface(
-                                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
+                                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                                    onClick = {
+                                        onLogFoodItem(item)
+                                    }
                                 ) {
                                     val foodName = item.description
                                     val foodBrand = if(!item.brandOwner.isNullOrEmpty()) "(${item.brandOwner})" else ""

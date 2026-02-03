@@ -1,6 +1,9 @@
 package com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen
 
+import android.os.Build
 import android.util.Log
+import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,14 +36,15 @@ import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.compon
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun UserLogScreen(
-    viewModel: UserLogViewModel = hiltViewModel()
+    viewModel: UserLogViewModel = hiltViewModel(),
 ) {
-    var mealType by remember { mutableStateOf(Meal.BREAKFAST) }
-    var showDialog by remember { mutableStateOf(false) }
-    val uiState by viewModel.uiState.collectAsState()
 
+    val uiState by viewModel.uiState.collectAsState()
+    var mealType = uiState.currentMealType
+    val showDialog = uiState.showDialog
 
 
 
@@ -54,12 +58,13 @@ fun UserLogScreen(
             contentAlignment = Alignment.Center
         ) {
 
+
+
             Column {
                 Meal.entries.forEach { meal ->
                     Button(
                         onClick = {
-                            mealType = meal
-                            showDialog = true
+                            viewModel.updateMealDialog(meal, true)
                         }
                     ) {
                         Text(meal.name)
@@ -82,8 +87,8 @@ fun UserLogScreen(
             onSearchClick = viewModel::searchFoodItems,
             isSearching = uiState.isSearching,
             onCategoryClick = viewModel::updateSelectedCategory,
+            onLogFoodItem = viewModel::onAddFoodItemToLog,
             onDissmissDialog = {
-                showDialog = false
                 viewModel.resetUiState()
             },
         )

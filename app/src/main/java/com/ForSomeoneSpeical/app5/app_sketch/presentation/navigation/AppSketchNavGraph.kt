@@ -24,7 +24,8 @@ fun NavGraphBuilder.appSketchNavGraph(navController: NavController) {
         }
 
         composable(AppSketchRoutes.UserLogRoute) {
-            UserLogScreen()
+            UserLogScreen(
+            )
 
         }
 
