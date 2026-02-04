@@ -72,25 +72,7 @@ fun UserLogScreen(
             LazyColumn {
 
                 item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp, alignment = Alignment.CenterHorizontally)
-                        ) {
 
-                        IconButton(
-                            onClick = {viewModel.updateDate(1)}
-                        ) { Icon(Icons.Default.ArrowBack, null) }
-
-                        Text(
-                            text = if(uiState.currentDate == LocalDate.now()) "Today" else "${uiState.currentDate.format(
-                                DateTimeFormatter.ISO_DATE)}"
-                        )
-
-                        IconButton(
-                            onClick = {viewModel.updateDate(-1)}
-                        ) { Icon(Icons.Default.ArrowForward, null) }
-
-                    }
                 }
 
                 Meal.entries.forEach { meal ->
