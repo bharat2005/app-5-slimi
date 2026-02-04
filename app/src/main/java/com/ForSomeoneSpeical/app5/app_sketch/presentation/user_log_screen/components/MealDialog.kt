@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Meal
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAFoodItem
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAResponse
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.getFullName
 import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.FoodCategory
 
 @Composable
@@ -87,12 +88,7 @@ fun MealDialog(
                                         onLogFoodItem(item)
                                     }
                                 ) {
-                                    val foodName = item.description
-                                    val foodBrand = if(!item.brandOwner.isNullOrEmpty()) "(${item.brandOwner})" else ""
-                                    val servingString = item.servingSize?.let { "(${String.format("%.2f",it)} ${item.servingSizeUnit}) (${item.householdServingFullText})" } ?: "(per 100g)"
-                                    val kcalString = item.foodNutrients.find { it.unitName == "KCAL" }?.let { "${it.value} ${it.unitName.toLowerCase()}" }
-
-                                    Text("${foodName} ${foodBrand} ${servingString} ${kcalString}")
+                                    Text("${item.getFullName()}")
                                 }
                             }
 
