@@ -31,7 +31,7 @@ fun DateSelector(
     ) {
 
         IconButton(
-            onClick = {onDateUpdate(1)}
+            onClick = {onDateUpdate(-1)}
         ) { Icon(Icons.Default.ArrowBack, null) }
 
         Text(
@@ -40,7 +40,7 @@ fun DateSelector(
         )
 
         IconButton(
-            onClick = {onDateUpdate(-1)}
+            onClick = {onDateUpdate(1)}
         ) { Icon(Icons.Default.ArrowForward, null) }
 
     }

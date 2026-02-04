@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
-
+import kotlin.Boolean
 
 
 enum class FoodCategory(val displayName : String) {
@@ -36,7 +36,8 @@ data class UserLogState @RequiresApi(Build.VERSION_CODES.O) constructor(
     val searchedFoodItems : USDAResponse = USDAResponse(emptyList()),
     val seletedCategory : FoodCategory = FoodCategory.FOUNDATION,
 
-    val loggedFoodForDay : List<USDAFoodItem> = emptyList()
+    val loggedFoodForDay : List<USDAFoodItem> = emptyList(),
+    val isLoading : Boolean = false,
 )
 
 
@@ -91,7 +92,12 @@ class UserLogViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun resetUiState(){
-        _uiState.update { UserLogState() }
+        _uiState.update { it.copy(
+            showDialog = false,
+            seletedCategory = FoodCategory.FOUNDATION,
+             isSearching = false,
+             searchedFoodItems = USDAResponse(emptyList()),
+        ) }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -124,7 +130,7 @@ class UserLogViewModel @Inject constructor(
 
         _uiState.update { it.copy(isSearching = true) }
         viewModelScope.launch {
-            userLogRepository.addFoodItemToLog(foodItem.copy(mealType = uiState.value.currentMealType), dateString).collect { result ->
+            userLogRepository.addFoodItemToLog(foodItem, dateString).collect { result ->
                 result.fold(
                     onSuccess = {
                         resetUiState()

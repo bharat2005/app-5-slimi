@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -43,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Meal
@@ -91,16 +93,18 @@ fun UserLogScreen(
                 //Meals Sections (Multi)
                 Meal.entries.forEach { meal ->
                     val loggedFoodItemsList = uiState.loggedFoodForDay.filter { it.mealType == meal }
+                    val totalCalories = loggedFoodItemsList.sumOf { if (it?.calories != null) it.calories * it.quantity else 0.0 }
+
                     item {
                         MealSection(
-                            meal,
+                            meal = meal,
                             updateMealDialog = viewModel::updateMealDialog,
-                            loggedFoodItemsList = loggedFoodItemsList
+                            loggedFoodItemsList = loggedFoodItemsList,
+                            totalCalories = totalCalories
                         )
-                        Spacer(modifier = Modifier.height(100.dp))
+                        Spacer(modifier = Modifier.height(50.dp))
                     }
                 }
-
             }
 
 
@@ -121,6 +125,17 @@ fun UserLogScreen(
                 viewModel.resetUiState()
             },
         )
+    }
+
+
+    if(uiState.isLoading){
+        Box(
+            modifier = Modifier.fillMaxSize().pointerInput(Unit){},
+            contentAlignment = Alignment.Center
+        )
+        {
+           CircularProgressIndicator()
+        }
     }
 
 

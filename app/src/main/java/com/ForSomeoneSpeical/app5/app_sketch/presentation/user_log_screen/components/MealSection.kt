@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
@@ -29,7 +31,8 @@ import com.ForSomeoneSpeical.app5.app_sketch.domain.model.getFullName
 fun MealSection(
     meal : Meal,
     updateMealDialog : (Meal, Boolean) -> Unit,
-    loggedFoodItemsList : List<USDAFoodItem>
+    loggedFoodItemsList : List<USDAFoodItem>,
+    totalCalories : Double,
 ) {
 
     Column(
@@ -45,20 +48,19 @@ fun MealSection(
         )
         {
             Text(meal.name)
-            Text("(Total Calories)")
+            Text(totalCalories.toString())
         }
         Spacer(modifier = Modifier.height(12.dp))
 
 
         //Logged Food Items (Multi)
-        Column(
+        Column (
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         )
         {
 
-            loggedFoodItemsList.forEach { foodItem ->
-
+            loggedFoodItemsList.forEach{ foodItem ->
                 //Logged Food Item (Single)
                 Row(
                     modifier = Modifier.fillMaxWidth().background(Color.Gray),
@@ -85,7 +87,7 @@ fun MealSection(
                             onClick = {}
                         ) { Icon(Icons.Default.Close, null)}
 
-                        Text("(quantity)")
+                        Text(foodItem.quantity.toString())
 
                         IconButton(
                             onClick = {}
@@ -100,7 +102,6 @@ fun MealSection(
                         Icon(Icons.Default.Delete, null, tint = Color.Red)
                     }
                 }
-
             }
 
         }

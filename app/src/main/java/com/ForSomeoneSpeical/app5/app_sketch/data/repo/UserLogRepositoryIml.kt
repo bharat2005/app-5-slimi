@@ -56,7 +56,9 @@ class UserLogRepositoryIml @Inject constructor(
             .collection("foodItems")
             .snapshots()
             .map { querySnapShot ->
-                querySnapShot.toObjects<USDAFoodItem>(USDAFoodItem::class.java).filterNotNull()
+                querySnapShot.mapNotNull { docSnapShot ->
+                    docSnapShot.toObject<USDAFoodItem>(USDAFoodItem::class.java)?.copy(docId = docSnapShot.id)
+                }
             }
     }
 

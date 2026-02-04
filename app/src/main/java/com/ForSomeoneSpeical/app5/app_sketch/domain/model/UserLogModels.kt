@@ -13,7 +13,12 @@ data class USDAFoodItem(
     val servingSizeUnit : String? = null,
     val householdServingFullText : String? = null,
 
+    //custome fields
     val mealType : Meal? = null,
+    val calories : Double? = null,
+    val quantity : Int = 1,
+
+    val docId : String? = null,
 
 )
 
@@ -26,6 +31,10 @@ fun USDAFoodItem.getFullName() : String {
 
     return "${foodName} ${foodBrand} ${servingString} ${kcalString}"
 
+}
+
+fun USDAFoodItem.getCalories() : Double? {
+    return this.foodNutrients.find { it.unitName == "KCAL" }?.let { it.value }
 }
 
 
