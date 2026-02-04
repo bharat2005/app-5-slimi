@@ -124,6 +124,36 @@ class UserLogViewModel @Inject constructor(
     }
 
 
+    fun onUpdateFoodItemQuantity(foodItem : USDAFoodItem, quantity : Int){
+        _uiState.update { it.copy(
+            loggedFoodForDay = it.loggedFoodForDay.map { item ->
+                if(item.docId == foodItem.docId){
+                    item.copy(quantity = item.quantity + quantity)
+                } else {
+                    item
+                }
+            }
+        ) }
+        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
+        viewModelScope.launch {
+            runCatching {
+                userLogRepository.updateFoodItemQuantity(foodItem.docId, dateString, quantity)
+            }.onFailure {
+                _uiState.update { it.copy(
+                    loggedFoodForDay = it.loggedFoodForDay.map { item ->
+                        if(item.docId == foodItem.docId){
+                            item.copy(quantity = item.quantity - quantity)
+                        } else {
+                            item
+                        }
+                    }
+                ) }
+            }
+
+        }
+    }
+
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun onAddFoodItemToLog(foodItem : USDAFoodItem){
         val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)

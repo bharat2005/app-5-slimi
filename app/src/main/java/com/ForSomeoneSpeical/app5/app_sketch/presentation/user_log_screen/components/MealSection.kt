@@ -33,6 +33,7 @@ fun MealSection(
     updateMealDialog : (Meal, Boolean) -> Unit,
     loggedFoodItemsList : List<USDAFoodItem>,
     totalCalories : Double,
+    updateFoodItemQuantity : (USDAFoodItem, Int) -> Unit,
 ) {
 
     Column(
@@ -84,13 +85,19 @@ fun MealSection(
                     )
                     {
                         IconButton(
-                            onClick = {}
+                            onClick = {
+                                if(foodItem.quantity > 1){
+                                    updateFoodItemQuantity(foodItem, -1)
+                                }
+                            }
                         ) { Icon(Icons.Default.Close, null)}
 
                         Text(foodItem.quantity.toString())
 
                         IconButton(
-                            onClick = {}
+                            onClick = {
+                                updateFoodItemQuantity(foodItem, +1)
+                            }
                         ) { Icon(Icons.Default.Add, null)}
                     }
 

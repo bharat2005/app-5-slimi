@@ -100,7 +100,8 @@ fun UserLogScreen(
                             meal = meal,
                             updateMealDialog = viewModel::updateMealDialog,
                             loggedFoodItemsList = loggedFoodItemsList,
-                            totalCalories = totalCalories
+                            totalCalories = totalCalories,
+                            updateFoodItemQuantity = viewModel::onUpdateFoodItemQuantity
                         )
                         Spacer(modifier = Modifier.height(50.dp))
                     }

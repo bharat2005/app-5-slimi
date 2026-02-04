@@ -10,4 +10,6 @@ interface UserLogRepository {
     fun addFoodItemToLog(foodItem : USDAFoodItem, dateString : String) : Flow<Result<Unit>>
 
     fun listenForFoodLogs(dateString : String) : Flow<List<USDAFoodItem>>
+
+    suspend fun updateFoodItemQuantity(docId : String, dateString: String, newQuantity : Int) : Unit
 }

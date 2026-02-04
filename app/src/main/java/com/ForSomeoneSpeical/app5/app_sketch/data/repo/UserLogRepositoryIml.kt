@@ -10,6 +10,7 @@ import com.google.firebase.firestore.snapshots
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class UserLogRepositoryIml @Inject constructor(
@@ -60,6 +61,23 @@ class UserLogRepositoryIml @Inject constructor(
                     docSnapShot.toObject<USDAFoodItem>(USDAFoodItem::class.java)?.copy(docId = docSnapShot.id)
                 }
             }
+    }
+
+    override suspend fun updateFoodItemQuantity(
+        docId : String,
+        dateString: String,
+        newQuantity: Int
+    ) {
+        firestore
+            .collection("users")
+            .document(userUid)
+            .collection("dailyLogs")
+            .document(dateString)
+            .collection("foodItems")
+            .document(docId)
+            .update("quantity", newQuantity)
+            .await()
+
     }
 
 

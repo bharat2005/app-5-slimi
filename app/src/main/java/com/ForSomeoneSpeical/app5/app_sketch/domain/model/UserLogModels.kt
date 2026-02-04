@@ -18,7 +18,7 @@ data class USDAFoodItem(
     val calories : Double? = null,
     val quantity : Int = 1,
 
-    val docId : String? = null,
+    val docId : String = "",
 
 )
 
