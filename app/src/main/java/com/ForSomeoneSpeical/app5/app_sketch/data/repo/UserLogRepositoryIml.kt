@@ -37,6 +37,8 @@ class UserLogRepositoryIml @Inject constructor(
                 .document(dateString)
                 .collection("foodItems").add(foodItem)
 
+            emit(Result.success(Unit))
+
         } catch (e : Exception){
             emit(Result.failure(e))
         }

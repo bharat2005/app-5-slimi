@@ -51,6 +51,13 @@ class UserLogViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
 
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun updateDate(offset : Long){
+        _uiState.update { it.copy(currentDate = it.currentDate.plusDays(offset)) }
+    }
+
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateSelectedCategory(category: FoodCategory){
         _uiState.update { it.copy(seletedCategory = category) }
@@ -87,17 +94,17 @@ class UserLogViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun onAddFoodItemToLog(foodItem : USDAFoodItem){
-        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE_TIME)
+        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
 
         _uiState.update { it.copy(isSearching = true) }
         viewModelScope.launch {
-            userLogRepository.addFoodItemToLog(foodItem, dateString).collect { result ->
+            userLogRepository.addFoodItemToLog(foodItem.copy(mealType = uiState.value.currentMealType), dateString).collect { result ->
                 result.fold(
                     onSuccess = {
-                        _uiState.update { it.copy(isSearching = false) }
+                        resetUiState()
                     },
                     onFailure = {
-                        _uiState.update { it.copy(isSearching = false) }
+                        resetUiState()
                     }
                 )
             }

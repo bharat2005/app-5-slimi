@@ -4,6 +4,7 @@ import android.os.Build
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,9 +14,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -35,6 +42,8 @@ import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Meal
 import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.MealDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -60,14 +69,39 @@ fun UserLogScreen(
 
 
 
-            Column {
+            LazyColumn {
+
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp, alignment = Alignment.CenterHorizontally)
+                        ) {
+
+                        IconButton(
+                            onClick = {viewModel.updateDate(1)}
+                        ) { Icon(Icons.Default.ArrowBack, null) }
+
+                        Text(
+                            text = if(uiState.currentDate == LocalDate.now()) "Today" else "${uiState.currentDate.format(
+                                DateTimeFormatter.ISO_DATE)}"
+                        )
+
+                        IconButton(
+                            onClick = {viewModel.updateDate(-1)}
+                        ) { Icon(Icons.Default.ArrowForward, null) }
+
+                    }
+                }
+
                 Meal.entries.forEach { meal ->
-                    Button(
-                        onClick = {
-                            viewModel.updateMealDialog(meal, true)
+                    item {
+                        Button(
+                            onClick = {
+                                viewModel.updateMealDialog(meal, true)
+                            }
+                        ) {
+                            Text(meal.name)
                         }
-                    ) {
-                        Text(meal.name)
                     }
                 }
             }
