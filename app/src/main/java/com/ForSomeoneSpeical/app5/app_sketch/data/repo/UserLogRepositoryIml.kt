@@ -6,8 +6,10 @@ import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAFoodItem
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAResponse
 import com.ForSomeoneSpeical.app5.app_sketch.domain.repo.UserLogRepository
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.snapshots
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class UserLogRepositoryIml @Inject constructor(
@@ -43,6 +45,22 @@ class UserLogRepositoryIml @Inject constructor(
             emit(Result.failure(e))
         }
     }
+
+
+    override fun listenForFoodLogs(dateString: String): Flow<List<USDAFoodItem>> {
+        return firestore
+            .collection("users")
+            .document(userUid)
+            .collection("dailyLogs")
+            .document(dateString)
+            .collection("foodItems")
+            .snapshots()
+            .map { querySnapShot ->
+                querySnapShot.toObjects<USDAFoodItem>(USDAFoodItem::class.java).filterNotNull()
+            }
+    }
+
+
 
 
 }

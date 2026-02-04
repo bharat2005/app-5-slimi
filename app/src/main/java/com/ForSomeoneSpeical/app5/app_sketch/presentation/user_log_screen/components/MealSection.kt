@@ -28,7 +28,8 @@ import com.ForSomeoneSpeical.app5.app_sketch.domain.model.getFullName
 @Composable
 fun MealSection(
     meal : Meal,
-    updateMealDialog : (Meal, Boolean) -> Unit
+    updateMealDialog : (Meal, Boolean) -> Unit,
+    loggedFoodItemsList : List<USDAFoodItem>
 ) {
 
     Column(
@@ -55,11 +56,6 @@ fun MealSection(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         )
         {
-            val loggedFoodItemsList = listOf<USDAFoodItem>(
-                USDAFoodItem(description = "Food Item 1"),
-                USDAFoodItem(description = "Food Item 2"),
-                USDAFoodItem(description = "Food Item 3"),
-            )
 
             loggedFoodItemsList.forEach { foodItem ->
 

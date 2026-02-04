@@ -90,10 +90,12 @@ fun UserLogScreen(
 
                 //Meals Sections (Multi)
                 Meal.entries.forEach { meal ->
+                    val loggedFoodItemsList = uiState.loggedFoodForDay.filter { it.mealType == meal }
                     item {
                         MealSection(
                             meal,
-                            updateMealDialog = viewModel::updateMealDialog
+                            updateMealDialog = viewModel::updateMealDialog,
+                            loggedFoodItemsList = loggedFoodItemsList
                         )
                         Spacer(modifier = Modifier.height(100.dp))
                     }

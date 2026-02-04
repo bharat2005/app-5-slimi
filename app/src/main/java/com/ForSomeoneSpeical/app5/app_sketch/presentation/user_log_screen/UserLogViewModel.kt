@@ -10,6 +10,7 @@ import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAFoodItem
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAResponse
 import com.ForSomeoneSpeical.app5.app_sketch.domain.repo.UserLogRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -33,11 +34,14 @@ data class UserLogState @RequiresApi(Build.VERSION_CODES.O) constructor(
     val currentMealType : Meal = Meal.BREAKFAST,
     val isSearching : Boolean = false,
     val searchedFoodItems : USDAResponse = USDAResponse(emptyList()),
-    val seletedCategory : FoodCategory = FoodCategory.FOUNDATION
+    val seletedCategory : FoodCategory = FoodCategory.FOUNDATION,
+
+    val loggedFoodForDay : List<USDAFoodItem> = emptyList()
 )
 
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class UserLogViewModel @Inject constructor(
     private val userLogRepository: UserLogRepository
@@ -50,11 +54,33 @@ class UserLogViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     val uiState = _uiState.asStateFlow()
 
+    private var job : Job? = null
+
+
+    init {
+        listenForLoggedFoodItems(LocalDate.now())
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun listenForLoggedFoodItems(date : LocalDate){
+        job?.cancel()
+
+        val dateString = date.format(DateTimeFormatter.ISO_DATE)
+
+        job = viewModelScope.launch {
+            userLogRepository.listenForFoodLogs(dateString).collect { loggedFoodItems ->
+                _uiState.update { it.copy(loggedFoodForDay = loggedFoodItems) }
+            }
+        }
+    }
 
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateDate(offset : Long){
-        _uiState.update { it.copy(currentDate = it.currentDate.plusDays(offset)) }
+        val newDate = uiState.value.currentDate.plusDays(offset)
+        _uiState.update { it.copy(currentDate = newDate) }
+
+        listenForLoggedFoodItems(newDate)
     }
 
 

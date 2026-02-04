@@ -8,4 +8,6 @@ interface UserLogRepository {
     fun searchFoodItems(query : String) : Flow<Result<USDAResponse>>
 
     fun addFoodItemToLog(foodItem : USDAFoodItem, dateString : String) : Flow<Result<Unit>>
+
+    fun listenForFoodLogs(dateString : String) : Flow<List<USDAFoodItem>>
 }
