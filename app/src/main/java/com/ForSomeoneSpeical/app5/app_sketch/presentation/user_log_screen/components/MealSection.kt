@@ -1,5 +1,6 @@
 package com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,10 +31,11 @@ import com.ForSomeoneSpeical.app5.app_sketch.domain.model.getFullName
 @Composable
 fun MealSection(
     meal : Meal,
-    updateMealDialog : (Meal, Boolean) -> Unit,
+    onMealDialogOpen : (Meal) -> Unit,
     loggedFoodItemsList : List<USDAFoodItem>,
     totalCalories : Double,
     updateFoodItemQuantity : (USDAFoodItem, Int) -> Unit,
+    onDeleteFoodItem : (USDAFoodItem) -> Unit,
 ) {
 
     Column(
@@ -62,6 +64,7 @@ fun MealSection(
         {
 
             loggedFoodItemsList.forEach{ foodItem ->
+                Log.d("DocId", foodItem.docId)
                 //Logged Food Item (Single)
                 Row(
                     modifier = Modifier.fillMaxWidth().background(Color.Gray),
@@ -103,7 +106,7 @@ fun MealSection(
 
                     //Delete Button
                     IconButton(
-                        onClick = {}
+                        onClick = {onDeleteFoodItem(foodItem)}
                     )
                     {
                         Icon(Icons.Default.Delete, null, tint = Color.Red)
@@ -118,7 +121,7 @@ fun MealSection(
         //Add Food Button
         Button(
             onClick = {
-                updateMealDialog(meal, true)
+                onMealDialogOpen(meal)
             },
             modifier = Modifier.fillMaxWidth()
         )

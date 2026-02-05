@@ -1,6 +1,5 @@
 package com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen
 
-import android.app.Dialog
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
@@ -36,6 +35,8 @@ data class UserLogState @RequiresApi(Build.VERSION_CODES.O) constructor(
     val searchedFoodItems : USDAResponse = USDAResponse(emptyList()),
     val seletedCategory : FoodCategory = FoodCategory.FOUNDATION,
 
+    val errorMessage : String? = null,
+
     val loggedFoodForDay : List<USDAFoodItem> = emptyList(),
     val isLoading : Boolean = false,
 )
@@ -54,44 +55,31 @@ class UserLogViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(UserLogState())
     @RequiresApi(Build.VERSION_CODES.O)
     val uiState = _uiState.asStateFlow()
-
     private var job : Job? = null
 
 
-    init {
-        listenForLoggedFoodItems(LocalDate.now())
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun listenForLoggedFoodItems(date : LocalDate){
-        job?.cancel()
-
-        val dateString = date.format(DateTimeFormatter.ISO_DATE)
-
-        job = viewModelScope.launch {
-            userLogRepository.listenForFoodLogs(dateString).collect { loggedFoodItems ->
-                _uiState.update { it.copy(loggedFoodForDay = loggedFoodItems) }
-            }
-        }
-    }
 
 
+    //Local State Updates for Date Selector
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateDate(offset : Long){
         val newDate = uiState.value.currentDate.plusDays(offset)
-        _uiState.update { it.copy(currentDate = newDate) }
+        _uiState.update { it.copy(currentDate = newDate, loggedFoodForDay = emptyList(), isLoading = true) }
 
         listenForLoggedFoodItems(newDate)
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun updateSelectedCategory(category: FoodCategory){
-        _uiState.update { it.copy(seletedCategory = category) }
-    }
 
+    //Local State Updates
+
+        //---Meal Dialog
     @RequiresApi(Build.VERSION_CODES.O)
-    fun resetUiState(){
+    fun onMealDialogOpen(meal : Meal){
+        _uiState.update { it.copy(currentMealType = meal, showDialog = true) }
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun onMealDialogClose(){
         _uiState.update { it.copy(
             showDialog = false,
             seletedCategory = FoodCategory.FOUNDATION,
@@ -99,13 +87,21 @@ class UserLogViewModel @Inject constructor(
              searchedFoodItems = USDAResponse(emptyList()),
         ) }
     }
-
     @RequiresApi(Build.VERSION_CODES.O)
-    fun updateMealDialog(meal : Meal, showMealDialog : Boolean){
-        _uiState.update { it.copy(currentMealType = meal, showDialog = showMealDialog) }
+    fun updateSelectedCategory(category: FoodCategory){
+        _uiState.update { it.copy(seletedCategory = category) }
     }
 
 
+        //---Error Handling
+    fun clearError(){
+        _uiState.update { it.copy(errorMessage = null) }
+    }
+
+
+
+
+    //Repository Interactions for Meal Dialog
     @RequiresApi(Build.VERSION_CODES.O)
     fun searchFoodItems(query : String){
         _uiState.update { it.copy(isSearching = true) }
@@ -122,38 +118,6 @@ class UserLogViewModel @Inject constructor(
             }
         }
     }
-
-
-    fun onUpdateFoodItemQuantity(foodItem : USDAFoodItem, quantity : Int){
-        _uiState.update { it.copy(
-            loggedFoodForDay = it.loggedFoodForDay.map { item ->
-                if(item.docId == foodItem.docId){
-                    item.copy(quantity = item.quantity + quantity)
-                } else {
-                    item
-                }
-            }
-        ) }
-        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
-        viewModelScope.launch {
-            runCatching {
-                userLogRepository.updateFoodItemQuantity(foodItem.docId, dateString, quantity)
-            }.onFailure {
-                _uiState.update { it.copy(
-                    loggedFoodForDay = it.loggedFoodForDay.map { item ->
-                        if(item.docId == foodItem.docId){
-                            item.copy(quantity = item.quantity - quantity)
-                        } else {
-                            item
-                        }
-                    }
-                ) }
-            }
-
-        }
-    }
-
-
     @RequiresApi(Build.VERSION_CODES.O)
     fun onAddFoodItemToLog(foodItem : USDAFoodItem){
         val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
@@ -163,15 +127,76 @@ class UserLogViewModel @Inject constructor(
             userLogRepository.addFoodItemToLog(foodItem, dateString).collect { result ->
                 result.fold(
                     onSuccess = {
-                        resetUiState()
+                        onMealDialogClose()
                     },
                     onFailure = {
-                        resetUiState()
+                        onMealDialogClose()
                     }
                 )
             }
         }
     }
 
-    
+
+
+
+
+    //Repository Interactions for Logged Food Items
+    fun onUpdateFoodItemQuantity(foodItem : USDAFoodItem, delta : Int){
+        val  updatedQuantity = foodItem.quantity + delta
+
+        _uiState.update { it.copy(isLoading = true) }
+        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
+        viewModelScope.launch {
+            runCatching {
+                userLogRepository.updateFoodItemQuantity(foodItem.docId, dateString, updatedQuantity)
+            }.onSuccess {
+                _uiState.update { it.copy(isLoading = false) }
+            }.onFailure { e ->
+                _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
+            }
+
+        }
+    }
+    fun onDeleteFoodItem(foodItem : USDAFoodItem){
+        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
+
+        _uiState.update { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            runCatching {
+                userLogRepository.onDeleteFoodItem(foodItem.docId, dateString )
+            }.onSuccess {
+                _uiState.update { it.copy(isLoading = false) }
+            }.onFailure { e ->
+                _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
+            }
+        }
+    }
+
+
+
+
+
+    //Listeners
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun listenForLoggedFoodItems(date : LocalDate){
+        job?.cancel()
+
+        val dateString = date.format(DateTimeFormatter.ISO_DATE)
+
+        job = viewModelScope.launch {
+            userLogRepository.listenForFoodLogs(dateString).collect { loggedFoodItems ->
+                _uiState.update { it.copy(loggedFoodForDay = loggedFoodItems, isLoading = false) }
+            }
+        }
+    }
+
+
+
+
+    init {
+        listenForLoggedFoodItems(LocalDate.now())
+    }
+
+
 }

@@ -20,6 +20,8 @@ class UserLogRepositoryIml @Inject constructor(
 
     val userUid = "user1"
 
+
+
     override fun searchFoodItems(query: String): Flow<Result<USDAResponse>> = flow {
         try {
             val foodItems = api.getFoodItems(query)
@@ -29,7 +31,6 @@ class UserLogRepositoryIml @Inject constructor(
             emit(Result.failure(e))
         }
     }
-
 
     override fun addFoodItemToLog(foodItem: USDAFoodItem, dateString : String): Flow<Result<Unit>> = flow {
         try {
@@ -47,7 +48,6 @@ class UserLogRepositoryIml @Inject constructor(
         }
     }
 
-
     override fun listenForFoodLogs(dateString: String): Flow<List<USDAFoodItem>> {
         return firestore
             .collection("users")
@@ -63,11 +63,7 @@ class UserLogRepositoryIml @Inject constructor(
             }
     }
 
-    override suspend fun updateFoodItemQuantity(
-        docId : String,
-        dateString: String,
-        newQuantity: Int
-    ) {
+    override suspend fun updateFoodItemQuantity( docId : String, dateString: String, newQuantity: Int) {
         firestore
             .collection("users")
             .document(userUid)
@@ -79,6 +75,19 @@ class UserLogRepositoryIml @Inject constructor(
             .await()
 
     }
+
+    override suspend fun onDeleteFoodItem(docId: String, dateString: String) {
+        firestore
+            .collection("users")
+            .document(userUid)
+            .collection("dailyLogs")
+            .document(dateString)
+            .collection("foodItems")
+            .document(docId)
+            .delete()
+            .await()
+    }
+
 
 
 
