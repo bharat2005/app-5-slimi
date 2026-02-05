@@ -11,7 +11,10 @@ interface UserLogRepository {
 
     fun listenForFoodLogs(dateString : String) : Flow<List<USDAFoodItem>>
 
-    suspend fun updateFoodItemQuantity( docId : String, dateString: String, newQuantity : Int) : Unit
+    suspend fun updateFoodItemQuantity( docId : String, dateString: String, newQuantity : Int, calories : Double) : Unit
+
+    suspend fun updateCalorie(docId : String, dateString : String, newKcal : Double) : Unit
+
 
     suspend fun onDeleteFoodItem(docId : String, dateString : String) : Unit
 }

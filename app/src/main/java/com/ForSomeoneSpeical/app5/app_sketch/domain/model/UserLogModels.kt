@@ -27,10 +27,8 @@ fun USDAFoodItem.getFullName() : String {
     val foodName = item.description
     val foodBrand = if(!item.brandOwner.isNullOrEmpty()) "(${item.brandOwner})" else ""
     val servingString = item.servingSize?.let { "(${String.format("%.2f",it)} ${item.servingSizeUnit}) (${item.householdServingFullText})" } ?: "(per 100g)"
-    val kcalString = item.foodNutrients.find { it.unitName == "KCAL" }?.let { "${it.value} ${it.unitName.toLowerCase()}" }
 
-    return "${foodName} ${foodBrand} ${servingString} ${kcalString}"
-
+    return "${foodName} ${foodBrand} ${servingString}"
 }
 
 fun USDAFoodItem.getCalories() : Double? {

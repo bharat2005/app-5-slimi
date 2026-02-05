@@ -63,7 +63,7 @@ class UserLogRepositoryIml @Inject constructor(
             }
     }
 
-    override suspend fun updateFoodItemQuantity( docId : String, dateString: String, newQuantity: Int) {
+    override suspend fun updateFoodItemQuantity( docId : String, dateString: String, newQuantity: Int, calories : Double) {
         firestore
             .collection("users")
             .document(userUid)
@@ -71,9 +71,19 @@ class UserLogRepositoryIml @Inject constructor(
             .document(dateString)
             .collection("foodItems")
             .document(docId)
-            .update("quantity", newQuantity)
+            .update("quantity", newQuantity, "calories", calories)
             .await()
 
+    }
+
+    override suspend fun updateCalorie(docId: String, dateString: String, newKcal: Double) {
+        firestore.collection("users").document(userUid)
+            .collection("dailyLogs")
+            .document(dateString)
+            .collection("foodItems")
+            .document(docId)
+            .update("calories", newKcal, "quantity" , 1)
+            .await()
     }
 
     override suspend fun onDeleteFoodItem(docId: String, dateString: String) {

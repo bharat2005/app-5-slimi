@@ -84,7 +84,8 @@ fun UserLogScreen(
                             loggedFoodItemsList = loggedFoodItemsList,
                             totalCalories = totalCalories,
                             updateFoodItemQuantity = viewModel::onUpdateFoodItemQuantity,
-                            onDeleteFoodItem = viewModel::onDeleteFoodItem
+                            onDeleteFoodItem = viewModel::onDeleteFoodItem,
+                            onUpdateCalories = viewModel::onKcalUpdate
                         )
                         Spacer(modifier = Modifier.height(50.dp))
                     }

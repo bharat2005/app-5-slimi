@@ -19,13 +19,19 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Meal
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAFoodItem
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.getCalories
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.getFullName
 
 @Composable
@@ -36,6 +42,7 @@ fun MealSection(
     totalCalories : Double,
     updateFoodItemQuantity : (USDAFoodItem, Int) -> Unit,
     onDeleteFoodItem : (USDAFoodItem) -> Unit,
+    onUpdateCalories : (USDAFoodItem, Double) -> Unit,
 ) {
 
     Column(
@@ -64,7 +71,8 @@ fun MealSection(
         {
 
             loggedFoodItemsList.forEach{ foodItem ->
-                Log.d("DocId", foodItem.docId)
+                var kcalString by remember(foodItem.docId, foodItem.calories) { mutableStateOf(foodItem.calories.toString()) }
+
                 //Logged Food Item (Single)
                 Row(
                     modifier = Modifier.fillMaxWidth().background(Color.Gray),
@@ -79,30 +87,46 @@ fun MealSection(
                     )
                     {
                         Text(foodItem.getFullName())
+                        Text(foodItem.getCalories().toString(), color = Color.Gray)
                     }
 
                     //Food Update Quantity Actions
-                    Row(
-                        modifier = Modifier.weight(1f),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    )
-                    {
-                        IconButton(
-                            onClick = {
-                                if(foodItem.quantity > 1){
-                                    updateFoodItemQuantity(foodItem, -1)
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        )
+                        {
+                            IconButton(
+                                onClick = {
+                                    if(foodItem.quantity > 1){
+                                        updateFoodItemQuantity(foodItem, -1)
+                                    }
                                 }
-                            }
-                        ) { Icon(Icons.Default.Close, null)}
+                            ) { Icon(Icons.Default.Close, null)}
 
-                        Text(foodItem.quantity.toString())
+                            Text(foodItem.quantity.toString())
 
-                        IconButton(
-                            onClick = {
-                                updateFoodItemQuantity(foodItem, +1)
-                            }
-                        ) { Icon(Icons.Default.Add, null)}
+                            IconButton(
+                                onClick = {
+                                    updateFoodItemQuantity(foodItem, +1)
+                                }
+                            ) { Icon(Icons.Default.Add, null)}
+                        }
+                        Row {
+                            TextField(
+                                value = kcalString,
+                                onValueChange = { kcalString = it},
+                            )
+                            Button(onClick = {
+                                onUpdateCalories(foodItem, kcalString.toDouble())
+                            }) {Text("Save") }
+
+                        }
                     }
+
 
                     //Delete Button
                     IconButton(

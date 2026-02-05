@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Meal
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAFoodItem
@@ -89,7 +90,11 @@ fun MealDialog(
                                         onLogFoodItem(item.copy(calories = item.getCalories(), mealType = mealType))
                                     }
                                 ) {
-                                    Text("${item.getFullName()}")
+                                    Column {
+                                        Text("${item.getFullName()}")
+                                        Text("${item.getCalories()}", color = Color.Gray)
+                                    }
+
                                 }
                             }
 

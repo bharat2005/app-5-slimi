@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Meal
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAFoodItem
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAResponse
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.getCalories
 import com.ForSomeoneSpeical.app5.app_sketch.domain.repo.UserLogRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -142,14 +143,31 @@ class UserLogViewModel @Inject constructor(
 
 
     //Repository Interactions for Logged Food Items
+
     fun onUpdateFoodItemQuantity(foodItem : USDAFoodItem, delta : Int){
         val  updatedQuantity = foodItem.quantity + delta
+        val newKcal = updatedQuantity * (foodItem.getCalories() ?: 0.0)
 
         _uiState.update { it.copy(isLoading = true) }
         val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
         viewModelScope.launch {
             runCatching {
-                userLogRepository.updateFoodItemQuantity(foodItem.docId, dateString, updatedQuantity)
+                userLogRepository.updateFoodItemQuantity(foodItem.docId, dateString, updatedQuantity, newKcal)
+            }.onSuccess {
+                _uiState.update { it.copy(isLoading = false) }
+            }.onFailure { e ->
+                _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
+            }
+
+        }
+    }
+    fun onKcalUpdate(foodItem : USDAFoodItem, newKcal : Double){
+
+        _uiState.update { it.copy(isLoading = true) }
+        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
+        viewModelScope.launch {
+            runCatching {
+                userLogRepository.updateCalorie(foodItem.docId, dateString, newKcal)
             }.onSuccess {
                 _uiState.update { it.copy(isLoading = false) }
             }.onFailure { e ->
