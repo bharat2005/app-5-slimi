@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -80,20 +81,19 @@ fun MealSection(
                     verticalAlignment = Alignment.CenterVertically
                 )
                 {
-
                     //Food Name
                     Column(
                         modifier = Modifier.fillMaxWidth(0.4f).fillMaxHeight(),
                     )
                     {
                         Text(foodItem.getFullName())
-                        Text(foodItem.getCalories().toString(), color = Color.Gray)
                     }
 
                     //Food Update Quantity Actions
                     Column(
                         modifier = Modifier.weight(1f)
-                    ) {
+                    )
+                    {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
@@ -117,16 +117,17 @@ fun MealSection(
                         }
                         Row {
                             TextField(
+                                modifier = Modifier.weight(1f),
                                 value = kcalString,
                                 onValueChange = { kcalString = it},
                             )
-                            Button(onClick = {
+                            Button(
+                                onClick = {
                                 onUpdateCalories(foodItem, kcalString.toDouble())
                             }) {Text("Save") }
 
                         }
                     }
-
 
                     //Delete Button
                     IconButton(

@@ -48,3 +48,22 @@ data class FoodNutrient(
     val value: Double = 0.0,
     val unitName: String = "",
 )
+
+
+
+
+
+
+
+data class LoggedExercise(
+    val docId : String = "",
+    val name : String = "",
+    val durationMinutes : Int = 0,
+    val caloriesBurned : Double = 0.0,
+)
+
+
+data class Exercise(
+    val name : String = "",
+    val metValue : Double = 0.0,
+)

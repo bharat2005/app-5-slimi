@@ -1,5 +1,6 @@
 package com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen
 
+import android.app.Dialog
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
@@ -29,18 +30,30 @@ enum class FoodCategory(val displayName : String) {
 
 }
 data class UserLogState @RequiresApi(Build.VERSION_CODES.O) constructor(
+
+    //Global States
     val currentDate : LocalDate = LocalDate.now(),
-    val showDialog : Boolean = false,
-    val currentMealType : Meal = Meal.BREAKFAST,
-    val isSearching : Boolean = false,
-    val searchedFoodItems : USDAResponse = USDAResponse(emptyList()),
-    val seletedCategory : FoodCategory = FoodCategory.FOUNDATION,
-
     val errorMessage : String? = null,
-
-    val loggedFoodForDay : List<USDAFoodItem> = emptyList(),
     val isLoading : Boolean = false,
-)
+    val loggedFoodForDay : List<USDAFoodItem> = emptyList(),
+
+
+
+
+    //Meal States
+    val currentMealType : Meal = Meal.BREAKFAST,
+    val selectedFoodCategory : FoodCategory = FoodCategory.FOUNDATION,
+    val isFoodSearching : Boolean = false,
+    val showMealDialog : Boolean = false,
+    val searchedFoodItems : USDAResponse = USDAResponse(emptyList()),
+
+
+    //Exercise States
+    val showExerciseDialog: Boolean = false,
+
+
+
+    )
 
 
 
@@ -77,20 +90,20 @@ class UserLogViewModel @Inject constructor(
         //---Meal Dialog
     @RequiresApi(Build.VERSION_CODES.O)
     fun onMealDialogOpen(meal : Meal){
-        _uiState.update { it.copy(currentMealType = meal, showDialog = true) }
+        _uiState.update { it.copy(currentMealType = meal, showMealDialog = true) }
     }
     @RequiresApi(Build.VERSION_CODES.O)
     fun onMealDialogClose(){
         _uiState.update { it.copy(
-            showDialog = false,
-            seletedCategory = FoodCategory.FOUNDATION,
-             isSearching = false,
+            showMealDialog = false,
+            selectedFoodCategory = FoodCategory.FOUNDATION,
+             isFoodSearching = false,
              searchedFoodItems = USDAResponse(emptyList()),
         ) }
     }
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateSelectedCategory(category: FoodCategory){
-        _uiState.update { it.copy(seletedCategory = category) }
+        _uiState.update { it.copy(selectedFoodCategory = category) }
     }
 
 
@@ -105,15 +118,15 @@ class UserLogViewModel @Inject constructor(
     //Repository Interactions for Meal Dialog
     @RequiresApi(Build.VERSION_CODES.O)
     fun searchFoodItems(query : String){
-        _uiState.update { it.copy(isSearching = true) }
+        _uiState.update { it.copy(isFoodSearching = true) }
         viewModelScope.launch {
             userLogRepository.searchFoodItems(query).collect { result ->
                 result.fold(
                     onSuccess = { foodItemsList ->
-                   _uiState.update { it.copy(isSearching = false, searchedFoodItems = foodItemsList ) }
+                   _uiState.update { it.copy(isFoodSearching = false, searchedFoodItems = foodItemsList ) }
                     },
                     onFailure = {
-                    _uiState.update { it.copy(isSearching = false) }
+                    _uiState.update { it.copy(isFoodSearching = false) }
                     }
                 )
             }
@@ -123,7 +136,7 @@ class UserLogViewModel @Inject constructor(
     fun onAddFoodItemToLog(foodItem : USDAFoodItem){
         val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
 
-        _uiState.update { it.copy(isSearching = true) }
+        _uiState.update { it.copy(isFoodSearching = true) }
         viewModelScope.launch {
             userLogRepository.addFoodItemToLog(foodItem, dateString).collect { result ->
                 result.fold(
