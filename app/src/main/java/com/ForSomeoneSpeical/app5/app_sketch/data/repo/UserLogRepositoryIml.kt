@@ -1,0 +1,105 @@
+package com.ForSomeoneSpeical.app5.app_sketch.data.repo
+
+import android.util.Log
+import com.ForSomeoneSpeical.app5.app_sketch.data.remote.api.ApiService
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAFoodItem
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAResponse
+import com.ForSomeoneSpeical.app5.app_sketch.domain.repo.UserLogRepository
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.snapshots
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
+
+class UserLogRepositoryIml @Inject constructor(
+    private val api : ApiService,
+    private val firestore : FirebaseFirestore
+): UserLogRepository {
+
+    val userUid = "user1"
+
+
+
+    override fun searchFoodItems(query: String): Flow<Result<USDAResponse>> = flow {
+        try {
+            val foodItems = api.getFoodItems(query)
+            emit(Result.success(foodItems))
+        } catch (e: Exception) {
+            Log.d("Error", e.message ?: "")
+            emit(Result.failure(e))
+        }
+    }
+
+    override fun addFoodItemToLog(foodItem: USDAFoodItem, dateString : String): Flow<Result<Unit>> = flow {
+        try {
+            firestore
+                .collection("users")
+                .document(userUid)
+                .collection("dailyLogs")
+                .document(dateString)
+                .collection("foodItems").add(foodItem)
+
+            emit(Result.success(Unit))
+
+        } catch (e : Exception){
+            emit(Result.failure(e))
+        }
+    }
+
+    override fun listenForFoodLogs(dateString: String): Flow<List<USDAFoodItem>> {
+        return firestore
+            .collection("users")
+            .document(userUid)
+            .collection("dailyLogs")
+            .document(dateString)
+            .collection("foodItems")
+            .snapshots()
+            .map { querySnapShot ->
+                querySnapShot.mapNotNull { docSnapShot ->
+                    docSnapShot.toObject<USDAFoodItem>(USDAFoodItem::class.java)?.copy(docId = docSnapShot.id)
+                }
+            }
+    }
+
+    override suspend fun updateFoodItemQuantity( docId : String, dateString: String, newQuantity: Int, calories : Double) {
+        firestore
+            .collection("users")
+            .document(userUid)
+            .collection("dailyLogs")
+            .document(dateString)
+            .collection("foodItems")
+            .document(docId)
+            .update("quantity", newQuantity, "calories", calories)
+            .await()
+
+    }
+
+    override suspend fun updateCalorie(docId: String, dateString: String, newKcal: Double) {
+        firestore.collection("users").document(userUid)
+            .collection("dailyLogs")
+            .document(dateString)
+            .collection("foodItems")
+            .document(docId)
+            .update("calories", newKcal, "quantity" , 1)
+            .await()
+    }
+
+    override suspend fun onDeleteFoodItem(docId: String, dateString: String) {
+        firestore
+            .collection("users")
+            .document(userUid)
+            .collection("dailyLogs")
+            .document(dateString)
+            .collection("foodItems")
+            .document(docId)
+            .delete()
+            .await()
+    }
+
+
+
+
+
+}
