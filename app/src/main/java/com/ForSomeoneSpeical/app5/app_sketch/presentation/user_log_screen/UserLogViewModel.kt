@@ -8,11 +8,13 @@ import androidx.lifecycle.viewModelScope
 import com.ForSomeoneSpeical.app5.app_sketch.data.local.ExerciseDatabase
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Exercise
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.ExerciseUIItem
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.LoggedExercise
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Meal
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAFoodItem
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAResponse
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.getCalories
 import com.ForSomeoneSpeical.app5.app_sketch.domain.repo.UserLogRepository
+import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.LoggedExerciseItem
 import com.ForSomeoneSpeical.app5.core.repo.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -231,7 +233,28 @@ class UserLogViewModel @Inject constructor(
 
 
     //Repository Interactions for Exercise Dialog
+    fun onAddExerciseToLog(exercise : ExerciseUIItem){
+        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
+        val exercise = LoggedExercise(
+            name = exercise.name,
+            durationMinutes = exercise.perMinutes,
+            caloriesBurned = exercise.burnCalories
+        )
 
+        _uiState.update { it.copy(showExerciseDialog = false, isLoading = true) }
+        viewModelScope.launch {
+            userLogRepository.addExerciseItemToLog(exercise, dateString).collect { result ->
+                result.fold(
+                    onSuccess = {
+                        _uiState.update { it.copy(isLoading = false) }
+                    },
+                    onFailure = { e ->
+                        _uiState.update { it.copy(errorMessage = e.message, isLoading = false) }
+                    }
+                )
+            }
+        }
+    }
 
 
 

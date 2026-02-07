@@ -1,5 +1,6 @@
 package com.ForSomeoneSpeical.app5.app_sketch.domain.repo
 
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.LoggedExercise
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAFoodItem
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAResponse
 import kotlinx.coroutines.flow.Flow
@@ -17,4 +18,6 @@ interface UserLogRepository {
 
 
     suspend fun onDeleteFoodItem(docId : String, dateString : String) : Unit
+
+    fun addExerciseItemToLog(exercise : LoggedExercise, dateString : String) : Flow<Result<Unit>>
 }

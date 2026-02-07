@@ -2,6 +2,7 @@ package com.ForSomeoneSpeical.app5.app_sketch.data.repo
 
 import android.util.Log
 import com.ForSomeoneSpeical.app5.app_sketch.data.remote.api.ApiService
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.LoggedExercise
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAFoodItem
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAResponse
 import com.ForSomeoneSpeical.app5.app_sketch.domain.repo.UserLogRepository
@@ -96,6 +97,22 @@ class UserLogRepositoryIml @Inject constructor(
             .document(docId)
             .delete()
             .await()
+    }
+
+    override fun addExerciseItemToLog(exercise: LoggedExercise, dateString: String): Flow<Result<Unit>> = flow {
+        try {
+            firestore.collection("users")
+                .document(userUid)
+                .collection("dailyLogs")
+                .document(dateString)
+                .collection("exerciseItems")
+                .add(exercise)
+                .await()
+
+            emit(Result.success(Unit))
+        }catch (e : Exception){
+            emit(Result.failure(e))
+        }
     }
 
 
