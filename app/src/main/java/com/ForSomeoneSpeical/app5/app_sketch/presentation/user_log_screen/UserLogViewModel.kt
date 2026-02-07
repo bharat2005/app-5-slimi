@@ -5,21 +5,29 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ForSomeoneSpeical.app5.app_sketch.data.local.ExerciseDatabase
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Exercise
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.ExerciseUIItem
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Meal
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAFoodItem
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAResponse
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.getCalories
 import com.ForSomeoneSpeical.app5.app_sketch.domain.repo.UserLogRepository
+import com.ForSomeoneSpeical.app5.core.repo.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import kotlin.Boolean
+import kotlin.math.min
 
 
 enum class FoodCategory(val displayName : String) {
@@ -50,9 +58,6 @@ data class UserLogState @RequiresApi(Build.VERSION_CODES.O) constructor(
 
     //Exercise States
     val showExerciseDialog: Boolean = false,
-
-
-
     )
 
 
@@ -60,9 +65,10 @@ data class UserLogState @RequiresApi(Build.VERSION_CODES.O) constructor(
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class UserLogViewModel @Inject constructor(
-    private val userLogRepository: UserLogRepository
+    private val userLogRepository: UserLogRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
-
+    val userDataState = userRepository.userDataState
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -70,7 +76,10 @@ class UserLogViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     val uiState = _uiState.asStateFlow()
     private var job : Job? = null
-
+    val exercisesUiItemList = userDataState.map { userData ->
+        val weight = userData?.weight ?: 60.0
+        mapExerciseList(ExerciseDatabase.exercises, weight)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
 
 
@@ -86,7 +95,6 @@ class UserLogViewModel @Inject constructor(
 
 
     //Local State Updates
-
         //---Meal Dialog
     @RequiresApi(Build.VERSION_CODES.O)
     fun onMealDialogOpen(meal : Meal){
@@ -105,12 +113,30 @@ class UserLogViewModel @Inject constructor(
     fun updateSelectedCategory(category: FoodCategory){
         _uiState.update { it.copy(selectedFoodCategory = category) }
     }
-
-
         //---Error Handling
     fun clearError(){
         _uiState.update { it.copy(errorMessage = null) }
     }
+        //---Exercise Dialog
+    fun onExerciseDialogOpen(){
+        _uiState.update { it.copy(showExerciseDialog = true) }
+    }
+    fun onExerciseDialogClose(){
+        _uiState.update { it.copy(showExerciseDialog = false) }
+    }
+    fun mapExerciseList(exerciseList : List<Exercise>, userWeight : Double) : List<ExerciseUIItem>{
+        return exerciseList.map { item ->
+            val minutes = 10
+            val kcal = (item.metValue * (userWeight * 3.5) / 200) * minutes
+            ExerciseUIItem(
+                name = item.name,
+                burnCalories = kcal,
+                perMinutes = minutes
+            )
+        }
+    }
+
+
 
 
 
@@ -151,12 +177,7 @@ class UserLogViewModel @Inject constructor(
         }
     }
 
-
-
-
-
     //Repository Interactions for Logged Food Items
-
     fun onUpdateFoodItemQuantity(foodItem : USDAFoodItem, delta : Int){
         val  updatedQuantity = foodItem.quantity + delta
         val newKcal = updatedQuantity * (foodItem.getCalories() ?: 0.0)

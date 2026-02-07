@@ -67,3 +67,9 @@ data class Exercise(
     val name : String = "",
     val metValue : Double = 0.0,
 )
+
+data class ExerciseUIItem(
+    val name : String = "",
+    val burnCalories : Double = 0.0,
+    val perMinutes : Int = 10,
+)

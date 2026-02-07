@@ -1,5 +1,6 @@
 package com.ForSomeoneSpeical.app5.app_sketch.domain.model
 
+import kotlin.Int
 
 
 enum class Gender { MALE, FEMALE }
@@ -36,11 +37,19 @@ enum class Meal{
 data class FinalPlan(
     val dailyCaloriesIntakeTarget : Int,
     val mealTargets : Map<Meal, Int>,
-
     val dailyCaloriesBurnTarget : Int,
-
     val dailyPFCTargetInGrams : Map<PFC, Int>
 )
+
+data class FinalPlanDTO(
+    val dailyCaloriesIntakeTarget : Int,
+    val mealTargets : Map<String, Int>,
+    val dailyCaloriesBurnTarget : Int,
+    val dailyPFCTargetInGrams : Map<String, Int>,
+    val weight : Double = 60.0
+)
+
+
 
 
 sealed class UpdateCourseNVariantEvent{

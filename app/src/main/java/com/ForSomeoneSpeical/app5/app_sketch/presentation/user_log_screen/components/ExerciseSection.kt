@@ -31,7 +31,7 @@ import com.ForSomeoneSpeical.app5.app_sketch.domain.model.getFullName
 
 @Composable
 fun ExerciseSection(
-
+    onAddExerciseClick : () -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -39,7 +39,7 @@ fun ExerciseSection(
     )
     {
 
-        //Meal title
+        //Exercise title
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(24.dp, alignment = Alignment.CenterHorizontally)
@@ -51,7 +51,7 @@ fun ExerciseSection(
         Spacer(modifier = Modifier.height(12.dp))
 
 
-        //Logged Food Items (Multi)
+        //Logged Exercise (Multi)
         Column (
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -76,10 +76,9 @@ fun ExerciseSection(
 
 
 
-        //Add Food Button
+        //Add Exercise Button
         Button(
-            onClick = {
-            },
+            onClick = onAddExerciseClick,
             modifier = Modifier.fillMaxWidth()
         )
         {

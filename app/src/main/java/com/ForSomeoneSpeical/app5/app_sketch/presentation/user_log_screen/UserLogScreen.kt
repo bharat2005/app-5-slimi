@@ -51,6 +51,9 @@ fun UserLogScreen(
     var mealType = uiState.currentMealType
     val showMealDialog = uiState.showMealDialog
 
+    //Excercise List
+    val exercisesList by viewModel.exercisesUiItemList.collectAsState()
+
 
 
     //Error Side Effects
@@ -102,7 +105,9 @@ fun UserLogScreen(
                 }
 
                 item {
-                    ExerciseSection()
+                    ExerciseSection(
+                        onAddExerciseClick = viewModel::onExerciseDialogOpen
+                    )
                     Spacer(modifier = Modifier.height(50.dp))
                 }
 
@@ -143,17 +148,15 @@ fun UserLogScreen(
                     )
 
                     LazyColumn {
-                        val exercisesList = listOf<Exercise>(
-                            Exercise(name = "Exercise 1"),
-                            Exercise(name = "Exercise 2"),
-                            Exercise(name = "Exercise 3"),
-                            Exercise(name = "Exercise 4"),
-                        )
-
                         items(exercisesList, key = {it.name}){
                             Surface(
                                 onClick = {}
-                            ) { Text(it.name) }
+                            ) {
+                                Column {
+                                    Text(it.name)
+                                    Text("${it.burnCalories} kcal per ${it.perMinutes} minutes", color = Color.Gray)
+                                }
+                            }
                         }
 
                     }
@@ -161,9 +164,7 @@ fun UserLogScreen(
             },
             confirmButton = {
                 Button(
-                    onClick = {
-
-                    }
+                    onClick = viewModel::onExerciseDialogClose
                 ){
                     Text("Confirm")
                   }
