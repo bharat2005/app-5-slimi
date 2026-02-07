@@ -32,6 +32,7 @@ import com.ForSomeoneSpeical.app5.app_sketch.domain.model.getFullName
 @Composable
 fun ExerciseSection(
     onAddExerciseClick : () -> Unit,
+    loggedExercisesList : List<LoggedExercise>
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -57,17 +58,12 @@ fun ExerciseSection(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         )
         {
-            val loggedExercisesList = listOf<LoggedExercise>(
-                LoggedExercise(name = "Exercise 1"),
-                LoggedExercise(name = "Exercise 2"),
-                LoggedExercise(name = "Exercise 3"),
-                LoggedExercise(name = "Exercise 4")
-            )
 
             loggedExercisesList.forEach{ exercise ->
                 //Logged Food Item (Single)
                 LoggedExerciseItem(
-                    exerciseName =  exercise.name
+                    exerciseName =  exercise.name,
+                    kcal = exercise.caloriesBurned.toString()
                 )
 
             }

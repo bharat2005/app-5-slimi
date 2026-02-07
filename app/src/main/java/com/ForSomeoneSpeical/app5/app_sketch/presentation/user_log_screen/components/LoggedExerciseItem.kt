@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun LoggedExerciseItem(
     exerciseName : String,
+    kcal : String
 ) {
     Row(
         modifier = Modifier.fillMaxWidth().background(Color.Gray),
@@ -37,7 +38,7 @@ fun LoggedExerciseItem(
             modifier = Modifier.fillMaxWidth(0.4f),
         ) {
             Text(exerciseName)
-            Text("(kcal)", color = Color.Red)
+            Text(kcal, color = Color.Red)
         }
 
         //Food Update Quantity Actions

@@ -110,7 +110,8 @@ fun UserLogScreen(
 
                 item {
                     ExerciseSection(
-                        onAddExerciseClick = viewModel::onExerciseDialogOpen
+                        onAddExerciseClick = viewModel::onExerciseDialogOpen,
+                        loggedExercisesList = uiState.loggedExerciseForDay,
                     )
                     Spacer(modifier = Modifier.height(50.dp))
                 }
