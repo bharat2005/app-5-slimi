@@ -229,6 +229,14 @@ class UserLogViewModel @Inject constructor(
 
 
 
+
+    //Repository Interactions for Exercise Dialog
+
+
+
+
+
+
     //Listeners
     @RequiresApi(Build.VERSION_CODES.O)
     fun listenForLoggedFoodItems(date : LocalDate){

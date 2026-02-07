@@ -42,10 +42,10 @@ data class FinalPlan(
 )
 
 data class FinalPlanDTO(
-    val dailyCaloriesIntakeTarget : Int,
-    val mealTargets : Map<String, Int>,
-    val dailyCaloriesBurnTarget : Int,
-    val dailyPFCTargetInGrams : Map<String, Int>,
+    val dailyCaloriesIntakeTarget : Int = 0,
+    val mealTargets : Map<String, Int> = mapOf("" to 0),
+    val dailyCaloriesBurnTarget : Int = 0,
+    val dailyPFCTargetInGrams : Map<String, Int> = mapOf("" to 0),
     val weight : Double = 60.0
 )
 
