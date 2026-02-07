@@ -20,4 +20,6 @@ interface UserLogRepository {
     suspend fun onDeleteFoodItem(docId : String, dateString : String) : Unit
 
     fun addExerciseItemToLog(exercise : LoggedExercise, dateString : String) : Flow<Result<Unit>>
+
+    fun listenForExerciseLogs(dateString : String) : Flow<List<LoggedExercise>>
 }

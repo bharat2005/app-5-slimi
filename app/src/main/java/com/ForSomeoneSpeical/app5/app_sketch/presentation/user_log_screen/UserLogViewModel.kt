@@ -1,6 +1,5 @@
 package com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen
 
-import android.app.Dialog
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
@@ -14,7 +13,6 @@ import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAFoodItem
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAResponse
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.getCalories
 import com.ForSomeoneSpeical.app5.app_sketch.domain.repo.UserLogRepository
-import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.LoggedExerciseItem
 import com.ForSomeoneSpeical.app5.core.repo.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -29,7 +27,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import kotlin.Boolean
-import kotlin.math.min
 
 
 enum class FoodCategory(val displayName : String) {
@@ -46,6 +43,7 @@ data class UserLogState @RequiresApi(Build.VERSION_CODES.O) constructor(
     val errorMessage : String? = null,
     val isLoading : Boolean = false,
     val loggedFoodForDay : List<USDAFoodItem> = emptyList(),
+    val loggedExerciseForDay : List<LoggedExercise> = emptyList(),
 
 
 
@@ -77,7 +75,8 @@ class UserLogViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(UserLogState())
     @RequiresApi(Build.VERSION_CODES.O)
     val uiState = _uiState.asStateFlow()
-    private var job : Job? = null
+    private var mealJob : Job? = null
+    private var exerciseJob : Job? = null
     val exercisesUiItemList = userDataState.map { userData ->
         val weight = userData?.weight ?: 60.0
         mapExerciseList(ExerciseDatabase.exercises, weight)
@@ -92,6 +91,7 @@ class UserLogViewModel @Inject constructor(
         _uiState.update { it.copy(currentDate = newDate, loggedFoodForDay = emptyList(), isLoading = true) }
 
         listenForLoggedFoodItems(newDate)
+        listenForLoggedExercises(newDate)
     }
 
 
@@ -263,22 +263,33 @@ class UserLogViewModel @Inject constructor(
     //Listeners
     @RequiresApi(Build.VERSION_CODES.O)
     fun listenForLoggedFoodItems(date : LocalDate){
-        job?.cancel()
+        mealJob?.cancel()
 
         val dateString = date.format(DateTimeFormatter.ISO_DATE)
 
-        job = viewModelScope.launch {
+        mealJob = viewModelScope.launch {
             userLogRepository.listenForFoodLogs(dateString).collect { loggedFoodItems ->
                 _uiState.update { it.copy(loggedFoodForDay = loggedFoodItems, isLoading = false) }
             }
         }
     }
+    fun listenForLoggedExercises(date : LocalDate){
+        exerciseJob?.cancel()
+        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
 
+        exerciseJob = viewModelScope.launch {
+            userLogRepository.listenForExerciseLogs(dateString).collect { loggedExercises ->
+                _uiState.update { it.copy(loggedExerciseForDay = loggedExercises, isLoading = false) }
+            }
+        }
+
+    }
 
 
 
     init {
         listenForLoggedFoodItems(LocalDate.now())
+        listenForLoggedExercises(LocalDate.now())
     }
 
 

@@ -163,7 +163,9 @@ fun UserLogScreen(
                     LazyColumn {
                         items(filteredExercises, key = {it.name}){
                             Surface(
-                                onClick = {}
+                                onClick = {
+                                    viewModel.onAddExerciseToLog(it)
+                                }
                             ) {
                                 Column {
                                     Text(it.name)

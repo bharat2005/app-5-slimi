@@ -115,6 +115,19 @@ class UserLogRepositoryIml @Inject constructor(
         }
     }
 
+    override fun listenForExerciseLogs(dateString: String): Flow<List<LoggedExercise>> {
+        return firestore
+            .collection("users")
+            .document(userUid)
+            .collection("dailyLogs")
+            .document(dateString)
+            .collection("exerciseItems")
+            .snapshots()
+            .map { querySnapshots ->
+                querySnapshots.toObjects(LoggedExercise::class.java)
+            }
+    }
+
 
 
 
