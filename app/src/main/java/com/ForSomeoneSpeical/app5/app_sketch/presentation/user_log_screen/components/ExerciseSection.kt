@@ -32,7 +32,9 @@ import com.ForSomeoneSpeical.app5.app_sketch.domain.model.getFullName
 @Composable
 fun ExerciseSection(
     onAddExerciseClick : () -> Unit,
-    loggedExercisesList : List<LoggedExercise>
+    loggedExercisesList : List<LoggedExercise>,
+    onDeleteExerciseItem : (LoggedExercise) -> Unit,
+    onUpdateCaloriesBurned : (LoggedExercise, Double, Int?) -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -62,8 +64,13 @@ fun ExerciseSection(
             loggedExercisesList.forEach{ exercise ->
                 //Logged Food Item (Single)
                 LoggedExerciseItem(
-                    exerciseName =  exercise.name,
-                    kcal = exercise.caloriesBurned.toString()
+                    exercise =  exercise,
+                    onDeleteExerciseItem = {
+                        onDeleteExerciseItem(exercise)
+                    },
+                    onUpdateCaloriesBurned = { calories, minutes ->
+                        onUpdateCaloriesBurned(exercise, calories, minutes)
+                    }
                 )
 
             }

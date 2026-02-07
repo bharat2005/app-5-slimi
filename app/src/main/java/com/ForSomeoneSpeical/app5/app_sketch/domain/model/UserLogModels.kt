@@ -60,6 +60,7 @@ data class LoggedExercise(
     val name : String = "",
     val durationMinutes : Int = 0,
     val caloriesBurned : Double = 0.0,
+    val baseCaloriesBurnPerMinute : Double = 0.0
 )
 
 
@@ -73,3 +74,9 @@ data class ExerciseUIItem(
     val burnCalories : Double = 0.0,
     val perMinutes : Int = 10,
 )
+
+
+enum class ExerciseEditType {
+    CALORIES,
+    MINUTES
+}

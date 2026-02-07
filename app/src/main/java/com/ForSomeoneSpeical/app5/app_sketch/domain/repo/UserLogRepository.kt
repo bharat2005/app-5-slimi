@@ -22,4 +22,8 @@ interface UserLogRepository {
     fun addExerciseItemToLog(exercise : LoggedExercise, dateString : String) : Flow<Result<Unit>>
 
     fun listenForExerciseLogs(dateString : String) : Flow<List<LoggedExercise>>
+
+    suspend fun onDeleteExerciseItem(docId : String, dateString : String) : Unit
+
+    suspend fun onUpdateCaloriesBurned(docId : String, dateString : String, newCaloriesBurned : Double , newMinutes : Int?) : Unit
 }

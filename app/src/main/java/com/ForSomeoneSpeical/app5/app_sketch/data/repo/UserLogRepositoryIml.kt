@@ -8,6 +8,7 @@ import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAResponse
 import com.ForSomeoneSpeical.app5.app_sketch.domain.repo.UserLogRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.snapshots
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -124,10 +125,43 @@ class UserLogRepositoryIml @Inject constructor(
             .collection("exerciseItems")
             .snapshots()
             .map { querySnapshots ->
-                querySnapshots.toObjects(LoggedExercise::class.java)
+                querySnapshots.mapNotNull{ docSnapShot ->
+                    docSnapShot.toObject(LoggedExercise::class.java)?.copy(docId = docSnapShot.id)
+                }
             }
     }
 
+
+    override suspend fun onDeleteExerciseItem(docId: String, dateString: String) {
+        firestore
+            .collection("users")
+            .document(userUid)
+            .collection("dailyLogs")
+            .document(dateString)
+            .collection("exerciseItems")
+            .document(docId)
+            .delete().await()
+    }
+
+    override suspend fun onUpdateCaloriesBurned(
+        docId: String,
+        dateString: String,
+        newCaloriesBurned: Double,
+        newMinutes: Int?
+    ) {
+        firestore.collection("users")
+            .document(userUid)
+            .collection("dailyLogs")
+            .document(dateString)
+            .collection("exerciseItems")
+            .document(docId)
+            .update(
+                mapOf(
+                    "caloriesBurned" to newCaloriesBurned,
+                    "durationMinutes" to newMinutes
+                )
+            ).await()
+    }
 
 
 

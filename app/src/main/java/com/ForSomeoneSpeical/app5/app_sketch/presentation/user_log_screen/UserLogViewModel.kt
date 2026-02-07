@@ -238,7 +238,8 @@ class UserLogViewModel @Inject constructor(
         val exercise = LoggedExercise(
             name = exercise.name,
             durationMinutes = exercise.perMinutes,
-            caloriesBurned = exercise.burnCalories
+            caloriesBurned = exercise.burnCalories,
+            baseCaloriesBurnPerMinute = exercise.burnCalories / exercise.perMinutes
         )
 
         _uiState.update { it.copy(showExerciseDialog = false, isLoading = true) }
@@ -252,6 +253,36 @@ class UserLogViewModel @Inject constructor(
                         _uiState.update { it.copy(errorMessage = e.message, isLoading = false) }
                     }
                 )
+            }
+        }
+    }
+
+    //Reposotry Interactions for Logged Exercise Items
+    fun onDeleteExerciseItem(exercise : LoggedExercise) {
+        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
+
+        _uiState.update { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            runCatching {
+                userLogRepository.onDeleteExerciseItem(exercise.docId, dateString)
+            }.onSuccess {
+                _uiState.update { it.copy(isLoading = false) }
+            }.onFailure { e ->
+                _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
+            }
+        }
+    }
+    fun onUpdateExerciseCalories(exercise : LoggedExercise , newCalores : Double, minutes : Int?){
+        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
+
+        _uiState.update { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            runCatching {
+                userLogRepository.onUpdateCaloriesBurned(exercise.docId, dateString, newCalores, minutes)
+            }.onSuccess {
+                _uiState.update { it.copy(isLoading = false) }
+            }.onFailure { e ->
+                _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
             }
         }
     }

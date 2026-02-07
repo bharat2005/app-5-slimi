@@ -112,6 +112,9 @@ fun UserLogScreen(
                     ExerciseSection(
                         onAddExerciseClick = viewModel::onExerciseDialogOpen,
                         loggedExercisesList = uiState.loggedExerciseForDay,
+                        onDeleteExerciseItem = viewModel::onDeleteExerciseItem,
+                        onUpdateCaloriesBurned = viewModel::onUpdateExerciseCalories
+
                     )
                     Spacer(modifier = Modifier.height(50.dp))
                 }
