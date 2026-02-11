@@ -80,3 +80,20 @@ enum class ExerciseEditType {
     CALORIES,
     MINUTES
 }
+
+
+enum class Physiological{
+    YES,
+    NO
+}
+
+enum class Message{
+    YES,
+    NO
+}
+
+enum class Feeling{
+    GOOD,
+    NORMAL,
+    BAD
+}
