@@ -105,7 +105,7 @@ fun LoggedExerciseItem(
                             }
                         }
                     }
-
+                    textInput= ""
                 }) {Text("Save") }
         }
 

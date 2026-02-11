@@ -58,7 +58,7 @@ data class FoodNutrient(
 data class LoggedExercise(
     val docId : String = "",
     val name : String = "",
-    val durationMinutes : Int = 0,
+    val durationMinutes : Int? = 0,
     val caloriesBurned : Double = 0.0,
     val baseCaloriesBurnPerMinute : Double = 0.0
 )
