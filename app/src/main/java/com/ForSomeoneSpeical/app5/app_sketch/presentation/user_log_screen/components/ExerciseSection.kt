@@ -36,6 +36,7 @@ fun ExerciseSection(
     onDeleteExerciseItem : (LoggedExercise) -> Unit,
     onUpdateCaloriesBurned : (LoggedExercise, Double, Int?) -> Unit,
 ) {
+    val totalCaloriesBurned = loggedExercisesList.sumOf { it.caloriesBurned }
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -49,7 +50,7 @@ fun ExerciseSection(
         )
         {
             Text("Exercise")
-            Text("(total calories burned)")
+            Text("${totalCaloriesBurned}")
         }
         Spacer(modifier = Modifier.height(12.dp))
 

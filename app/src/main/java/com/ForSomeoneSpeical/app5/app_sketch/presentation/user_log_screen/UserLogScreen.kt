@@ -60,14 +60,14 @@ fun UserLogScreen(
 
 
 
-//    //Error Side Effects
-//    LaunchedEffect(uiState.errorMessage) {
-//        uiState.errorMessage?.let {
-//            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-//            viewModel.clearError()
-//        }
-//    }
-//
+    //Error Side Effects
+    LaunchedEffect(uiState.errorMessage) {
+        uiState.errorMessage?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.clearError()
+        }
+    }
+
 
 
     //Ui
@@ -108,6 +108,7 @@ fun UserLogScreen(
                     }
                 }
 
+                //Exercise Section
                 item {
                     ExerciseSection(
                         onAddExerciseClick = viewModel::onExerciseDialogOpen,
