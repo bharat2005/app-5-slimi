@@ -1,5 +1,6 @@
 package com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen
 
+import android.app.AlertDialog
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -37,6 +38,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Exercise
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Meal
 import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.DateSelector
+import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.ExerciseDialog
 import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.ExerciseSection
 import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.MealDialog
 import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.MealSection
@@ -54,7 +56,6 @@ fun UserLogScreen(
 
     //Meal States
     var mealType = uiState.currentMealType
-    val showMealDialog = uiState.showMealDialog
 
     //Excercise List
     val exercisesList by viewModel.exercisesUiItemList.collectAsState()
@@ -91,7 +92,7 @@ fun UserLogScreen(
 
                 //Vitals Section
                 item {
-                    VitalsSection()
+                   Button(onClick = viewModel::onVitalsDialogOpen) { Text("Vitals")}
                     Spacer(modifier = Modifier.height(50.dp))
                 }
 
@@ -136,7 +137,7 @@ fun UserLogScreen(
 
 
     //Dialogs
-    if (showMealDialog) {
+    if (uiState.showMealDialog) {
         MealDialog(
             mealType = mealType,
             seletedCategory = uiState.selectedFoodCategory,
@@ -152,50 +153,15 @@ fun UserLogScreen(
     }
 
     if(uiState.showExerciseDialog){
-        AlertDialog(
-            onDismissRequest = {},
-            title = { Text("Exercise") },
-            text = {
-                Column {
-                    var searchQuery by remember { mutableStateOf("") }
-                    val filteredExercises by remember { derivedStateOf {
-                        if(searchQuery.isBlank()){
-                            exercisesList
-                        } else {
-                            exercisesList.filter { it.name.contains(searchQuery, true) }
-                        }
-                    } }
-
-                    TextField(
-                        value = searchQuery,
-                        onValueChange = {searchQuery = it},
-                    )
-
-                    LazyColumn {
-                        items(filteredExercises, key = {it.name}){
-                            Surface(
-                                onClick = {
-                                    viewModel.onAddExerciseToLog(it)
-                                }
-                            ) {
-                                Column {
-                                    Text(it.name)
-                                    Text("${it.burnCalories} kcal per ${it.perMinutes} minutes", color = Color.Gray)
-                                }
-                            }
-                        }
-
-                    }
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = viewModel::onExerciseDialogClose
-                ){
-                    Text("Confirm")
-                  }
-            }
+        ExerciseDialog(
+            exercisesList = exercisesList,
+            onAddExerciseToLog = viewModel::onAddExerciseToLog,
+            onExerciseDialogClose = viewModel::onExerciseDialogClose
         )
+    }
+
+    if(uiState.showVitalsDialog){
+
 
     }
 
@@ -209,8 +175,6 @@ fun UserLogScreen(
            CircularProgressIndicator()
         }
     }
-
-
 }
 
 

@@ -58,6 +58,10 @@ data class UserLogState @RequiresApi(Build.VERSION_CODES.O) constructor(
 
     //Exercise States
     val showExerciseDialog: Boolean = false,
+
+    //Vitals States
+    val showVitalsDialog : Boolean = false,
+
     )
 
 
@@ -137,6 +141,14 @@ class UserLogViewModel @Inject constructor(
             )
         }
     }
+        //--Vitals Dialog
+    fun onVitalsDialogOpen(){
+            _uiState.update { it.copy(showVitalsDialog = true) }
+        }
+    fun onVitalsDialogClose(){
+        _uiState.update { it.copy(showVitalsDialog = false) }
+    }
+
 
 
 
