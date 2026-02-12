@@ -193,5 +193,29 @@ class UserLogRepositoryIml @Inject constructor(
     }
 
 
+    override suspend fun updateDailyVitals(dateString : String, dailyVitals: DailyVitals) {
+        val dailyVitalsDTO = DailyVitalsDTO(
+            bodyWeightKg = dailyVitals.bodyWeight,
+            bodyFatPercentage = dailyVitals.bodyFat,
+            mensuration = dailyVitals.physiological,
+            bowelMomentum = dailyVitals.message,
+            mood = dailyVitals.feeling,
+            chestCm = dailyVitals.chest,
+            waistCm = dailyVitals.waist,
+            hipsCm = dailyVitals.hips,
+            forearmsCm = dailyVitals.forearms,
+            calfCm = dailyVitals.calf
+        )
+
+        firestore.collection("users")
+            .document(userUid)
+            .collection("dailyLogs")
+            .document(dateString)
+            .set(dailyVitalsDTO)
+            .await()
+
+    }
+
+
 
 }

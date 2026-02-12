@@ -163,7 +163,8 @@ fun UserLogScreen(
     if(uiState.showVitalsDialog){
         VitalsDialog(
             onVitalsDialogClose = viewModel::onVitalsDialogClose,
-            dailyVitals = uiState.loggedVitalsForDay
+            dailyVitals = uiState.loggedVitalsForDay,
+            onUpdateVitals = viewModel::onUpdateVitals
         )
     }
 

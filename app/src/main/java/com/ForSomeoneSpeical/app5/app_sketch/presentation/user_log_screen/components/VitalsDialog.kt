@@ -24,20 +24,21 @@ import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Physiological
 @Composable
 fun VitalsDialog(
     onVitalsDialogClose : () -> Unit,
-    dailyVitals : DailyVitals
+    dailyVitals : DailyVitals,
+    onUpdateVitals : (DailyVitals) -> Unit,
 ) {
-    var bodyWeight by remember { mutableStateOf(dailyVitals.bodyWeight ?: "") }
-    var bodyFat by remember { mutableStateOf(dailyVitals.bodyFat ?: "") }
+    var bodyWeight by remember { mutableStateOf(dailyVitals.bodyWeight?.toString() ?: "") }
+    var bodyFat by remember { mutableStateOf(dailyVitals.bodyFat?.toString() ?: "") }
 
     var selectedPhysiological by remember { mutableStateOf<Physiological?>(dailyVitals.physiological) }
     var selectedMessage by remember { mutableStateOf<Message?>(dailyVitals.message) }
     var selectedFeeling by remember { mutableStateOf<Feeling?>(dailyVitals.feeling) }
 
-    var chest by remember { mutableStateOf(dailyVitals.chest ?: "") }
-    var waist by remember { mutableStateOf(dailyVitals.waist ?: "") }
-    var hips by remember { mutableStateOf(dailyVitals.hips ?: "") }
-    var forearms by remember { mutableStateOf(dailyVitals.forearms ?: "") }
-    var calf by remember { mutableStateOf(dailyVitals.forearms ?: "") }
+    var chest by remember { mutableStateOf(dailyVitals.chest?.toString() ?: "") }
+    var waist by remember { mutableStateOf(dailyVitals.waist?.toString() ?: "") }
+    var hips by remember { mutableStateOf(dailyVitals.hips?.toString() ?: "") }
+    var forearms by remember { mutableStateOf(dailyVitals.forearms?.toString() ?: "") }
+    var calf by remember { mutableStateOf(dailyVitals.calf?.toString() ?: "") }
 
 
     AlertDialog(
@@ -45,22 +46,19 @@ fun VitalsDialog(
         title = { Text("Vitals") },
         text = {
 
-
             Column(
                 modifier = Modifier.fillMaxWidth(),
-            )
-            {
-
+            ) {
 
                 //Body Weight
                 TextField(
-                    value = bodyWeight.toString(),
+                    value = bodyWeight,
                     onValueChange = { bodyWeight = it },
                     placeholder = { Text("Body Weight (kg)") }
                 )
                 //Body Fat
                 TextField(
-                    value = bodyFat.toString(),
+                    value = bodyFat,
                     onValueChange = { bodyFat = it },
                     placeholder = { Text("Body Fat (%)") }
                 )
@@ -119,27 +117,27 @@ fun VitalsDialog(
 
                 //Body Measurements
                 TextField(
-                    value = chest.toString(),
+                    value = chest,
                     onValueChange = { chest = it },
                     placeholder = { Text("Chest (cm)") }
                 )
                 TextField(
-                    value = waist.toString(),
+                    value = waist,
                     onValueChange = { waist = it },
                     placeholder = { Text("Waist (cm)") }
                 )
                 TextField(
-                    value = hips.toString(),
+                    value = hips,
                     onValueChange = { hips = it },
                     placeholder = { Text("Hips (cm)") }
                 )
                 TextField(
-                    value = forearms.toString(),
+                    value = forearms,
                     onValueChange = { forearms = it },
                     placeholder = { Text("Forearms (cm)") }
                 )
                 TextField(
-                    value = calf.toString(),
+                    value = calf,
                     onValueChange = { calf = it },
                     placeholder = { Text("Calf (cm)") }
                 )
@@ -147,7 +145,21 @@ fun VitalsDialog(
             }
         },
         confirmButton = {
-            Button(onClick = onVitalsDialogClose) { Text("Confirm") }
+            Button(onClick = {
+                val updatedDailyVitals = dailyVitals.copy(
+                    bodyWeight = bodyWeight.toDoubleOrNull(),
+                    bodyFat = bodyFat.toDoubleOrNull(),
+                    physiological = selectedPhysiological,
+                    message = selectedMessage,
+                    feeling = selectedFeeling,
+                    chest = chest.toDoubleOrNull(),
+                    waist = waist.toDoubleOrNull(),
+                    hips = hips.toDoubleOrNull(),
+                    forearms = forearms.toDoubleOrNull(),
+                    calf = calf.toDoubleOrNull()
+                )
+                onUpdateVitals(updatedDailyVitals)
+            }) { Text("Confirm") }
         }
     )
 

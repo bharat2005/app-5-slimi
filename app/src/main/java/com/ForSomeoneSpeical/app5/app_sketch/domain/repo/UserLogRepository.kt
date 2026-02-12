@@ -30,4 +30,6 @@ interface UserLogRepository {
     suspend fun onUpdateCaloriesBurned(docId : String, dateString : String, newCaloriesBurned : Double , newMinutes : Int?) : Unit
 
     fun listenForVitalsLog(dateString : String) : Flow<DailyVitals>
+
+    suspend fun updateDailyVitals(dateString : String, dailyVitals: DailyVitals)
 }
