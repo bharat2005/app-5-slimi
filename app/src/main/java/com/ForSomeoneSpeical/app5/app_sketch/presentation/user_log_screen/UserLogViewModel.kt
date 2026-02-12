@@ -308,6 +308,15 @@ class UserLogViewModel @Inject constructor(
 
 
 
+    //Repository Interactions for Vitals Dialog
+    fun onUpdateVitals(dailyVitals: DailyVitals){
+        viewModelScope.launch {
+
+        }
+    }
+
+
+
 
     //Listeners
     @RequiresApi(Build.VERSION_CODES.O)
@@ -336,20 +345,6 @@ class UserLogViewModel @Inject constructor(
         vitalsJob?.cancel()
         vitalsJob = viewModelScope.launch {
             userLogRepository.listenForVitalsLog(date.format(DateTimeFormatter.ISO_DATE)).collect { dailyVital ->
-                val dailyVital = dailyVital?.let {
-                    DailyVitals(
-                        bodyWeight = it.bodyWeightKg,
-                        bodyFat = it.bodyFatPercentage,
-                        physiological = it.mensuration,
-                        message = it.bowelMomentum,
-                        feeling = it.mood,
-                        chest = it.chestCm,
-                        waist = it.waistCm,
-                        hips = it.hipsCm,
-                        forearms = it.forearmsCm,
-                        calf = it.calfCm
-                    )
-                } ?: DailyVitals()
                 _uiState.update { it.copy(loggedVitalsForDay =  dailyVital) }
             }
         }

@@ -2,6 +2,7 @@ package com.ForSomeoneSpeical.app5.app_sketch.data.repo
 
 import android.util.Log
 import com.ForSomeoneSpeical.app5.app_sketch.data.remote.api.ApiService
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.DailyVitals
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.DailyVitalsDTO
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.LoggedExercise
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAFoodItem
@@ -165,7 +166,7 @@ class UserLogRepositoryIml @Inject constructor(
     }
 
 
-    override fun listenForVitalsLog(dateString: String): Flow<DailyVitalsDTO?> {
+    override fun listenForVitalsLog(dateString: String): Flow<DailyVitals> {
         return firestore
             .collection("users")
             .document(userUid)
@@ -173,8 +174,22 @@ class UserLogRepositoryIml @Inject constructor(
             .document(dateString)
             .snapshots()
             .map { documentSnapshot ->
-                documentSnapshot.toObject(DailyVitalsDTO::class.java)
-            }
+                documentSnapshot.toObject(DailyVitalsDTO::class.java)?.let {
+                        DailyVitals(
+                            bodyWeight = it.bodyWeightKg,
+                            bodyFat = it.bodyFatPercentage,
+                            physiological = it.mensuration,
+                            message = it.bowelMomentum,
+                            feeling = it.mood,
+                            chest = it.chestCm,
+                            waist = it.waistCm,
+                            hips = it.hipsCm,
+                            forearms = it.forearmsCm,
+                            calf = it.calfCm
+                        )
+                    } ?: DailyVitals()
+                }
+
     }
 
 
