@@ -2,6 +2,7 @@ package com.ForSomeoneSpeical.app5.app_sketch.data.repo
 
 import android.util.Log
 import com.ForSomeoneSpeical.app5.app_sketch.data.remote.api.ApiService
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.DailyVitalsDTO
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.LoggedExercise
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAFoodItem
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAResponse
@@ -163,6 +164,18 @@ class UserLogRepositoryIml @Inject constructor(
             ).await()
     }
 
+
+    override fun listenForVitalsLog(dateString: String): Flow<DailyVitalsDTO?> {
+        return firestore
+            .collection("users")
+            .document(userUid)
+            .collection("dailyLogs")
+            .document(dateString)
+            .snapshots()
+            .map { documentSnapshot ->
+                documentSnapshot.toObject(DailyVitalsDTO::class.java)
+            }
+    }
 
 
 

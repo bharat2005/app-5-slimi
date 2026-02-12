@@ -1,10 +1,12 @@
 package com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen
 
+import android.icu.util.LocaleData
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ForSomeoneSpeical.app5.app_sketch.data.local.ExerciseDatabase
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.DailyVitals
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Exercise
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.ExerciseUIItem
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.LoggedExercise
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.Boolean
 
@@ -61,6 +64,7 @@ data class UserLogState @RequiresApi(Build.VERSION_CODES.O) constructor(
 
     //Vitals States
     val showVitalsDialog : Boolean = false,
+    val loggedVitalsForDay : DailyVitals = DailyVitals()
 
     )
 
@@ -81,6 +85,7 @@ class UserLogViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
     private var mealJob : Job? = null
     private var exerciseJob : Job? = null
+    private var vitalsJob : Job? = null
     val exercisesUiItemList = userDataState.map { userData ->
         val weight = userData?.weight ?: 60.0
         mapExerciseList(ExerciseDatabase.exercises, weight)
@@ -94,6 +99,7 @@ class UserLogViewModel @Inject constructor(
         val newDate = uiState.value.currentDate.plusDays(offset)
         _uiState.update { it.copy(currentDate = newDate, loggedFoodForDay = emptyList(), isLoading = true) }
 
+        listenForLoggedVitals(newDate)
         listenForLoggedFoodItems(newDate)
         listenForLoggedExercises(newDate)
     }
@@ -318,19 +324,41 @@ class UserLogViewModel @Inject constructor(
     }
     fun listenForLoggedExercises(date : LocalDate){
         exerciseJob?.cancel()
-        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
 
         exerciseJob = viewModelScope.launch {
-            userLogRepository.listenForExerciseLogs(dateString).collect { loggedExercises ->
+            userLogRepository.listenForExerciseLogs(date.format(DateTimeFormatter.ISO_DATE)).collect { loggedExercises ->
                 _uiState.update { it.copy(loggedExerciseForDay = loggedExercises, isLoading = false) }
             }
         }
 
     }
+    fun listenForLoggedVitals(date : LocalDate){
+        vitalsJob?.cancel()
+        vitalsJob = viewModelScope.launch {
+            userLogRepository.listenForVitalsLog(date.format(DateTimeFormatter.ISO_DATE)).collect { dailyVital ->
+                val dailyVital = dailyVital?.let {
+                    DailyVitals(
+                        bodyWeight = it.bodyWeightKg,
+                        bodyFat = it.bodyFatPercentage,
+                        physiological = it.mensuration,
+                        message = it.bowelMomentum,
+                        feeling = it.mood,
+                        chest = it.chestCm,
+                        waist = it.waistCm,
+                        hips = it.hipsCm,
+                        forearms = it.forearmsCm,
+                        calf = it.calfCm
+                    )
+                } ?: DailyVitals()
+                _uiState.update { it.copy(loggedVitalsForDay =  dailyVital) }
+            }
+        }
+    }
 
 
 
     init {
+        listenForLoggedVitals(LocalDate.now())
         listenForLoggedFoodItems(LocalDate.now())
         listenForLoggedExercises(LocalDate.now())
     }

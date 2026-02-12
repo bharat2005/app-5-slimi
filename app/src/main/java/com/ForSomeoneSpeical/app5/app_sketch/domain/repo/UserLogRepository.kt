@@ -1,5 +1,7 @@
 package com.ForSomeoneSpeical.app5.app_sketch.domain.repo
 
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.DailyVitals
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.DailyVitalsDTO
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.LoggedExercise
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAFoodItem
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAResponse
@@ -26,4 +28,6 @@ interface UserLogRepository {
     suspend fun onDeleteExerciseItem(docId : String, dateString : String) : Unit
 
     suspend fun onUpdateCaloriesBurned(docId : String, dateString : String, newCaloriesBurned : Double , newMinutes : Int?) : Unit
+
+    fun listenForVitalsLog(dateString : String) : Flow<DailyVitalsDTO?>
 }

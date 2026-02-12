@@ -97,3 +97,33 @@ enum class Feeling{
     NORMAL,
     BAD
 }
+
+data class DailyVitalsDTO(
+    val bodyWeightKg : Double? = null,
+    val bodyFatPercentage : Double? = null,
+
+    val mensuration : Physiological? = null,
+    val bowelMomentum : Message? = null,
+    val mood : Feeling? = null,
+
+    val chestCm : Double? = null,
+    val waistCm : Double? = null,
+    val hipsCm : Double? = null,
+    val forearmsCm : Double? = null,
+    val calfCm : Double? = null,
+)
+
+data class DailyVitals(
+    val bodyWeight : Double? = null,
+    val bodyFat : Double? = null,
+
+    val physiological : Physiological? = null,
+    val message : Message? = null,
+    val feeling : Feeling? = null,
+
+    val chest : Double? = null,
+    val waist : Double? = null,
+    val hips : Double? = null,
+    val forearms : Double? = null,
+    val calf : Double? = null,
+)

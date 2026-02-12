@@ -15,26 +15,29 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.DailyVitals
+import com.ForSomeoneSpeical.app5.app_sketch.domain.model.DailyVitalsDTO
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Feeling
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Message
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Physiological
 
 @Composable
 fun VitalsDialog(
-
+    onVitalsDialogClose : () -> Unit,
+    dailyVitals : DailyVitals
 ) {
-    var bodyWeight by remember { mutableStateOf("") }
-    var bodyFat by remember { mutableStateOf("") }
+    var bodyWeight by remember { mutableStateOf(dailyVitals.bodyWeight ?: "") }
+    var bodyFat by remember { mutableStateOf(dailyVitals.bodyFat ?: "") }
 
-    var selectedPhysiological by remember { mutableStateOf<Physiological?>(null) }
-    var selectedMessage by remember { mutableStateOf<Message?>(null) }
-    var selectedFeeling by remember { mutableStateOf<Feeling?>(null) }
+    var selectedPhysiological by remember { mutableStateOf<Physiological?>(dailyVitals.physiological) }
+    var selectedMessage by remember { mutableStateOf<Message?>(dailyVitals.message) }
+    var selectedFeeling by remember { mutableStateOf<Feeling?>(dailyVitals.feeling) }
 
-    var chest by remember { mutableStateOf("") }
-    var waist by remember { mutableStateOf("") }
-    var hips by remember { mutableStateOf("") }
-    var forearms by remember { mutableStateOf("") }
-    var calf by remember { mutableStateOf("") }
+    var chest by remember { mutableStateOf(dailyVitals.chest ?: "") }
+    var waist by remember { mutableStateOf(dailyVitals.waist ?: "") }
+    var hips by remember { mutableStateOf(dailyVitals.hips ?: "") }
+    var forearms by remember { mutableStateOf(dailyVitals.forearms ?: "") }
+    var calf by remember { mutableStateOf(dailyVitals.forearms ?: "") }
 
 
     AlertDialog(
@@ -51,13 +54,13 @@ fun VitalsDialog(
 
                 //Body Weight
                 TextField(
-                    value = bodyWeight,
+                    value = bodyWeight.toString(),
                     onValueChange = { bodyWeight = it },
                     placeholder = { Text("Body Weight (kg)") }
                 )
                 //Body Fat
                 TextField(
-                    value = bodyFat,
+                    value = bodyFat.toString(),
                     onValueChange = { bodyFat = it },
                     placeholder = { Text("Body Fat (%)") }
                 )
@@ -98,9 +101,8 @@ fun VitalsDialog(
 
                 }
                 //How are you today?
-                Row(
+                Column (
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
                 )
                 {
                     Text("How feeling today?")
@@ -117,27 +119,27 @@ fun VitalsDialog(
 
                 //Body Measurements
                 TextField(
-                    value = chest,
+                    value = chest.toString(),
                     onValueChange = { chest = it },
                     placeholder = { Text("Chest (cm)") }
                 )
                 TextField(
-                    value = waist,
+                    value = waist.toString(),
                     onValueChange = { waist = it },
                     placeholder = { Text("Waist (cm)") }
                 )
                 TextField(
-                    value = hips,
+                    value = hips.toString(),
                     onValueChange = { hips = it },
                     placeholder = { Text("Hips (cm)") }
                 )
                 TextField(
-                    value = forearms,
+                    value = forearms.toString(),
                     onValueChange = { forearms = it },
                     placeholder = { Text("Forearms (cm)") }
                 )
                 TextField(
-                    value = calf,
+                    value = calf.toString(),
                     onValueChange = { calf = it },
                     placeholder = { Text("Calf (cm)") }
                 )
@@ -145,7 +147,7 @@ fun VitalsDialog(
             }
         },
         confirmButton = {
-            Button(onClick = {}) { Text("Confirm") }
+            Button(onClick = onVitalsDialogClose) { Text("Confirm") }
         }
     )
 

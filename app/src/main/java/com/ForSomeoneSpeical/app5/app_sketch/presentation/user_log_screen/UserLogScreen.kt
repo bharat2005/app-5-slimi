@@ -42,7 +42,7 @@ import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.compon
 import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.ExerciseSection
 import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.MealDialog
 import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.MealSection
-import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.VitalsSection
+import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.VitalsDialog
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -161,8 +161,9 @@ fun UserLogScreen(
     }
 
     if(uiState.showVitalsDialog){
-
-
+        VitalsDialog(
+            onVitalsDialogClose = viewModel::onVitalsDialogClose
+        )
     }
 
     //Loaders
