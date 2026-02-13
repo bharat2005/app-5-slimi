@@ -58,12 +58,72 @@ data class FoodNutrient(
 data class LoggedExercise(
     val docId : String = "",
     val name : String = "",
-    val durationMinutes : Int = 0,
+    val durationMinutes : Int? = 0,
     val caloriesBurned : Double = 0.0,
+    val baseCaloriesBurnPerMinute : Double = 0.0
 )
 
 
 data class Exercise(
     val name : String = "",
     val metValue : Double = 0.0,
+)
+
+data class ExerciseUIItem(
+    val name : String = "",
+    val burnCalories : Double = 0.0,
+    val perMinutes : Int = 10,
+)
+
+
+enum class ExerciseEditType {
+    CALORIES,
+    MINUTES
+}
+
+
+enum class Physiological{
+    YES,
+    NO
+}
+
+enum class Message{
+    YES,
+    NO
+}
+
+enum class Feeling{
+    GOOD,
+    NORMAL,
+    BAD
+}
+
+data class DailyVitalsDTO(
+    val bodyWeightKg : Double? = null,
+    val bodyFatPercentage : Double? = null,
+
+    val mensuration : Physiological? = null,
+    val bowelMomentum : Message? = null,
+    val mood : Feeling? = null,
+
+    val chestCm : Double? = null,
+    val waistCm : Double? = null,
+    val hipsCm : Double? = null,
+    val forearmsCm : Double? = null,
+    val calfCm : Double? = null,
+)
+
+data class DailyVitals(
+    val bodyWeight : Double? = null,
+    val bodyFat : Double? = null,
+
+    val physiological : Physiological? = null,
+    val message : Message? = null,
+    val feeling : Feeling? = null,
+
+    val chest : Double? = null,
+    val waist : Double? = null,
+    val hips : Double? = null,
+    val forearms : Double? = null,
+    val calf : Double? = null,
 )

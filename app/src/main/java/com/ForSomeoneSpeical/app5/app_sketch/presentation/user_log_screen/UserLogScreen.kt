@@ -1,5 +1,6 @@
 package com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen
 
+import android.app.AlertDialog
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -22,7 +23,11 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,9 +38,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Exercise
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Meal
 import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.DateSelector
+import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.ExerciseDialog
 import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.ExerciseSection
 import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.MealDialog
 import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.MealSection
+import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.VitalsDialog
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -49,7 +56,9 @@ fun UserLogScreen(
 
     //Meal States
     var mealType = uiState.currentMealType
-    val showMealDialog = uiState.showMealDialog
+
+    //Excercise List
+    val exercisesList by viewModel.exercisesUiItemList.collectAsState()
 
 
 
@@ -81,6 +90,11 @@ fun UserLogScreen(
                     )
                 }
 
+                //Vitals Section
+                item {
+                   Button(onClick = viewModel::onVitalsDialogOpen) { Text("Vitals")}
+                    Spacer(modifier = Modifier.height(50.dp))
+                }
 
                 //Meals Sections (Multi)
                 Meal.entries.forEach { meal ->
@@ -101,8 +115,15 @@ fun UserLogScreen(
                     }
                 }
 
+                //Exercise Section
                 item {
-                    ExerciseSection()
+                    ExerciseSection(
+                        onAddExerciseClick = viewModel::onExerciseDialogOpen,
+                        loggedExercisesList = uiState.loggedExerciseForDay,
+                        onDeleteExerciseItem = viewModel::onDeleteExerciseItem,
+                        onUpdateCaloriesBurned = viewModel::onUpdateExerciseCalories
+
+                    )
                     Spacer(modifier = Modifier.height(50.dp))
                 }
 
@@ -116,7 +137,7 @@ fun UserLogScreen(
 
 
     //Dialogs
-    if (showMealDialog) {
+    if (uiState.showMealDialog) {
         MealDialog(
             mealType = mealType,
             seletedCategory = uiState.selectedFoodCategory,
@@ -132,46 +153,20 @@ fun UserLogScreen(
     }
 
     if(uiState.showExerciseDialog){
-        AlertDialog(
-            onDismissRequest = {},
-            title = { Text("Exercise") },
-            text = {
-                Column {
-                    TextField(
-                        value = "",
-                        onValueChange = {},
-                    )
-
-                    LazyColumn {
-                        val exercisesList = listOf<Exercise>(
-                            Exercise(name = "Exercise 1"),
-                            Exercise(name = "Exercise 2"),
-                            Exercise(name = "Exercise 3"),
-                            Exercise(name = "Exercise 4"),
-                        )
-
-                        items(exercisesList, key = {it.name}){
-                            Surface(
-                                onClick = {}
-                            ) { Text(it.name) }
-                        }
-
-                    }
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-
-                    }
-                ){
-                    Text("Confirm")
-                  }
-            }
+        ExerciseDialog(
+            exercisesList = exercisesList,
+            onAddExerciseToLog = viewModel::onAddExerciseToLog,
+            onExerciseDialogClose = viewModel::onExerciseDialogClose
         )
-
     }
 
+    if(uiState.showVitalsDialog){
+        VitalsDialog(
+            onVitalsDialogClose = viewModel::onVitalsDialogClose,
+            dailyVitals = uiState.loggedVitalsForDay,
+            onUpdateVitals = viewModel::onUpdateVitals
+        )
+    }
 
     //Loaders
     if(uiState.isLoading){
@@ -183,8 +178,6 @@ fun UserLogScreen(
            CircularProgressIndicator()
         }
     }
-
-
 }
 
 

@@ -31,43 +31,47 @@ import com.ForSomeoneSpeical.app5.app_sketch.domain.model.getFullName
 
 @Composable
 fun ExerciseSection(
-
+    onAddExerciseClick : () -> Unit,
+    loggedExercisesList : List<LoggedExercise>,
+    onDeleteExerciseItem : (LoggedExercise) -> Unit,
+    onUpdateCaloriesBurned : (LoggedExercise, Double, Int?) -> Unit,
 ) {
+    val totalCaloriesBurned = loggedExercisesList.sumOf { it.caloriesBurned }
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
 
-        //Meal title
+        //Exercise title
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(24.dp, alignment = Alignment.CenterHorizontally)
         )
         {
             Text("Exercise")
-            Text("(total calories burned)")
+            Text("${totalCaloriesBurned}")
         }
         Spacer(modifier = Modifier.height(12.dp))
 
 
-        //Logged Food Items (Multi)
+        //Logged Exercise (Multi)
         Column (
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         )
         {
-            val loggedExercisesList = listOf<LoggedExercise>(
-                LoggedExercise(name = "Exercise 1"),
-                LoggedExercise(name = "Exercise 2"),
-                LoggedExercise(name = "Exercise 3"),
-                LoggedExercise(name = "Exercise 4")
-            )
 
             loggedExercisesList.forEach{ exercise ->
                 //Logged Food Item (Single)
                 LoggedExerciseItem(
-                    exerciseName =  exercise.name
+                    exercise =  exercise,
+                    onDeleteExerciseItem = {
+                        onDeleteExerciseItem(exercise)
+                    },
+                    onUpdateCaloriesBurned = { calories, minutes ->
+                        onUpdateCaloriesBurned(exercise, calories, minutes)
+                    }
                 )
 
             }
@@ -76,10 +80,9 @@ fun ExerciseSection(
 
 
 
-        //Add Food Button
+        //Add Exercise Button
         Button(
-            onClick = {
-            },
+            onClick = onAddExerciseClick,
             modifier = Modifier.fillMaxWidth()
         )
         {
