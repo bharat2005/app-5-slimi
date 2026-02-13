@@ -315,15 +315,7 @@ class UserLogViewModel @Inject constructor(
         onVitalsDialogClose()
         _uiState.update { it.copy(isLoading = true) }
 
-        viewModelScope.launch {
-            runCatching {
-                userLogRepository.updateDailyVitals(dateString, dailyVitals)
-            }.onSuccess {
-                _uiState.update { it.copy(isLoading = false) }
-            }.onFailure { e ->
-                _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
-            }
-        }
+
     }
 
 
