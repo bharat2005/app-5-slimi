@@ -230,20 +230,20 @@ class UserLogViewModel @Inject constructor(
 
         }
     }
-//    fun onDeleteFoodItem(foodItem : USDAFoodItem){
-//        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
-//
-//        _uiState.update { it.copy(isLoading = true) }
-//        viewModelScope.launch {
-//            runCatching {
-//                userLogRepository.onDeleteFoodItem(foodItem.docId, dateString )
-//            }.onSuccess {
-//                _uiState.update { it.copy(isLoading = false) }
-//            }.onFailure { e ->
-//                _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
-//            }
-//        }
-//    }
+    fun onDeleteFoodItem(foodItem : USDAFoodItem){
+        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
+
+        _uiState.update { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            runCatching {
+                userLogRepository.onDeleteFoodItem(foodItem.docId, dateString )
+            }.onSuccess {
+                _uiState.update { it.copy(isLoading = false) }
+            }.onFailure { e ->
+                _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
+            }
+        }
+    }
 
 
 
