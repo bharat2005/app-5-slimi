@@ -160,13 +160,14 @@ fun UserLogScreen(
         )
     }
 
-//    if(uiState.showVitalsDialog){
-//        VitalsDialog(
-//            onVitalsDialogClose = viewModel::onVitalsDialogClose,
-//            dailyVitals = uiState.loggedVitalsForDay,
-//            onUpdateVitals = viewModel::onUpdateVitals
-//        )
-//    }
+    if(uiState.showVitalsDialog){
+        VitalsDialog(
+            onVitalsDialogClose = viewModel::onVitalsDialogClose,
+            dailyVitals = uiState.loggedVitalsForDay,
+            onUpdateVitals = viewModel::onUpdateVitals
+        )
+
+    }
 
     //Loaders
     if(uiState.isLoading){
