@@ -215,21 +215,21 @@ class UserLogViewModel @Inject constructor(
 
         }
     }
-    fun onKcalUpdate(foodItem : USDAFoodItem, newKcal : Double){
-
-        _uiState.update { it.copy(isLoading = true) }
-        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
-        viewModelScope.launch {
-            runCatching {
-                userLogRepository.updateCalorie(foodItem.docId, dateString, newKcal)
-            }.onSuccess {
-                _uiState.update { it.copy(isLoading = false) }
-            }.onFailure { e ->
-                _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
-            }
-
-        }
-    }
+//    fun onKcalUpdate(foodItem : USDAFoodItem, newKcal : Double){
+//
+//        _uiState.update { it.copy(isLoading = true) }
+//        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
+//        viewModelScope.launch {
+//            runCatching {
+//                userLogRepository.updateCalorie(foodItem.docId, dateString, newKcal)
+//            }.onSuccess {
+//                _uiState.update { it.copy(isLoading = false) }
+//            }.onFailure { e ->
+//                _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
+//            }
+//
+//        }
+//    }
     fun onDeleteFoodItem(foodItem : USDAFoodItem){
         val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
 

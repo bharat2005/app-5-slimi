@@ -101,18 +101,18 @@ fun UserLogScreen(
                     val loggedFoodItemsList = uiState.loggedFoodForDay.filter { it.mealType == meal }
                     val totalCalories = loggedFoodItemsList.sumOf { if (it?.calories != null) it.calories else 0.0 }
 
-//                    item {
-//                        MealSection(
-//                            meal = meal,
-//                            onMealDialogOpen = viewModel::onMealDialogOpen,
-//                            loggedFoodItemsList = loggedFoodItemsList,
-//                            totalCalories = totalCalories,
-//                            updateFoodItemQuantity = viewModel::onUpdateFoodItemQuantity,
-//                            onDeleteFoodItem = viewModel::onDeleteFoodItem,
-//                            onUpdateCalories = viewModel::onKcalUpdate
-//                        )
-//                        Spacer(modifier = Modifier.height(50.dp))
-//                    }
+                    item {
+                        MealSection(
+                            meal = meal,
+                            onMealDialogOpen = viewModel::onMealDialogOpen,
+                            loggedFoodItemsList = loggedFoodItemsList,
+                            totalCalories = totalCalories,
+                            updateFoodItemQuantity = viewModel::onUpdateFoodItemQuantity,
+                            onDeleteFoodItem = viewModel::onDeleteFoodItem,
+                            onUpdateCalories = viewModel::onKcalUpdate
+                        )
+                        Spacer(modifier = Modifier.height(50.dp))
+                    }
                 }
 
                 //Exercise Section
