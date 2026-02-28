@@ -42,7 +42,7 @@ fun VitalsDialog(
 
 
     AlertDialog(
-        onDismissRequest = {},
+        onDismissRequest = onVitalsDialogClose,
         title = { Text("Vitals") },
         text = {
 

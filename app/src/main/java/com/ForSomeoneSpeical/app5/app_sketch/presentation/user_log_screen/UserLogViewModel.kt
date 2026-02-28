@@ -215,35 +215,35 @@ class UserLogViewModel @Inject constructor(
 
         }
     }
-//    fun onKcalUpdate(foodItem : USDAFoodItem, newKcal : Double){
-//
-//        _uiState.update { it.copy(isLoading = true) }
-//        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
-//        viewModelScope.launch {
-//            runCatching {
-//                userLogRepository.updateCalorie(foodItem.docId, dateString, newKcal)
-//            }.onSuccess {
-//                _uiState.update { it.copy(isLoading = false) }
-//            }.onFailure { e ->
-//                _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
-//            }
-//
-//        }
-//    }
-//    fun onDeleteFoodItem(foodItem : USDAFoodItem){
-//        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
-//
-//        _uiState.update { it.copy(isLoading = true) }
-//        viewModelScope.launch {
-//            runCatching {
-//                userLogRepository.onDeleteFoodItem(foodItem.docId, dateString )
-//            }.onSuccess {
-//                _uiState.update { it.copy(isLoading = false) }
-//            }.onFailure { e ->
-//                _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
-//            }
-//        }
-//    }
+    fun onKcalUpdate(foodItem : USDAFoodItem, newKcal : Double){
+
+        _uiState.update { it.copy(isLoading = true) }
+        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
+        viewModelScope.launch {
+            runCatching {
+                userLogRepository.updateCalorie(foodItem.docId, dateString, newKcal)
+            }.onSuccess {
+                _uiState.update { it.copy(isLoading = false) }
+            }.onFailure { e ->
+                _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
+            }
+
+        }
+    }
+    fun onDeleteFoodItem(foodItem : USDAFoodItem){
+        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
+
+        _uiState.update { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            runCatching {
+                userLogRepository.onDeleteFoodItem(foodItem.docId, dateString )
+            }.onSuccess {
+                _uiState.update { it.copy(isLoading = false) }
+            }.onFailure { e ->
+                _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
+            }
+        }
+    }
 
 
 
@@ -276,20 +276,6 @@ class UserLogViewModel @Inject constructor(
     }
 
     //Reposotry Interactions for Logged Exercise Items
-    fun onDeleteExerciseItem(exercise : LoggedExercise) {
-        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
-
-        _uiState.update { it.copy(isLoading = true) }
-        viewModelScope.launch {
-            runCatching {
-                userLogRepository.onDeleteExerciseItem(exercise.docId, dateString)
-            }.onSuccess {
-                _uiState.update { it.copy(isLoading = false) }
-            }.onFailure { e ->
-                _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
-            }
-        }
-    }
     fun onUpdateExerciseCalories(exercise : LoggedExercise , newCalores : Double, minutes : Int?){
         val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
 
@@ -297,6 +283,20 @@ class UserLogViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching {
                 userLogRepository.onUpdateCaloriesBurned(exercise.docId, dateString, newCalores, minutes)
+            }.onSuccess {
+                _uiState.update { it.copy(isLoading = false) }
+            }.onFailure { e ->
+                _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
+            }
+        }
+    }
+    fun onDeleteExerciseItem(exercise : LoggedExercise) {
+        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE)
+
+        _uiState.update { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            runCatching {
+                userLogRepository.onDeleteExerciseItem(exercise.docId, dateString)
             }.onSuccess {
                 _uiState.update { it.copy(isLoading = false) }
             }.onFailure { e ->
@@ -314,7 +314,16 @@ class UserLogViewModel @Inject constructor(
 
         onVitalsDialogClose()
         _uiState.update { it.copy(isLoading = true) }
-
+        viewModelScope.launch {
+            runCatching {
+                userLogRepository.updateDailyVitals(dateString, dailyVitals)
+            }.onSuccess {
+                _uiState.update { it.copy( isLoading = false) }
+            }.onFailure { e ->
+                onVitalsDialogClose()
+                _uiState.update { it.copy(errorMessage = e.message, isLoading = false) }
+            }
+        }
 
     }
 

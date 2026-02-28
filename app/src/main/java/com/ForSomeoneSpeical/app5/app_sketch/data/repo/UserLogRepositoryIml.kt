@@ -9,6 +9,7 @@ import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAFoodItem
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.USDAResponse
 import com.ForSomeoneSpeical.app5.app_sketch.domain.repo.UserLogRepository
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.snapshots
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.flow.Flow
@@ -211,7 +212,7 @@ class UserLogRepositoryIml @Inject constructor(
             .document(userUid)
             .collection("dailyLogs")
             .document(dateString)
-            .set(dailyVitalsDTO)
+            .set(dailyVitalsDTO, SetOptions.merge())
             .await()
 
     }
