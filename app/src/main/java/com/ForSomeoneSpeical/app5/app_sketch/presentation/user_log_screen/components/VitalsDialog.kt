@@ -9,9 +9,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -211,6 +215,10 @@ fun VitalsDialog(
                                     }
                                 ) { Text(interval.start) }
 
+                                IconButton(onClick = {
+                                    sleepIntervalsList = sleepIntervalsList.filter { it.id == interval.id  }
+                                }) { Icon(Icons.Default.Delete, contentDescription = null, tint = Color.Red ) }
+
                                 //End Time
                                 TextButton(
                                     onClick = {
@@ -243,6 +251,9 @@ fun VitalsDialog(
         },
         confirmButton = {
             Button(onClick = {
+                val filteredSleepIntervals = sleepIntervalsList.mapNotNull {
+                    if(it.start.isNotEmpty() && it.end.isNotEmpty()) it else null
+                }
                 val updatedDailyVitals = dailyVitals.copy(
                     bodyWeight = bodyWeight.toDoubleOrNull(),
                     bodyFat = bodyFat.toDoubleOrNull(),
@@ -253,7 +264,8 @@ fun VitalsDialog(
                     waist = waist.toDoubleOrNull(),
                     hips = hips.toDoubleOrNull(),
                     forearms = forearms.toDoubleOrNull(),
-                    calf = calf.toDoubleOrNull()
+                    calf = calf.toDoubleOrNull(),
+                    sleepIntervalList = filteredSleepIntervals
                 )
                 onUpdateVitals(updatedDailyVitals)
             }) { Text("Confirm") }

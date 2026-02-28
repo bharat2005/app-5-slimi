@@ -330,6 +330,7 @@ class UserLogViewModel @Inject constructor(
 
 
 
+
     //Listeners
     @RequiresApi(Build.VERSION_CODES.O)
     fun listenForLoggedFoodItems(date : LocalDate){

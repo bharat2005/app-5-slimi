@@ -186,7 +186,8 @@ class UserLogRepositoryIml @Inject constructor(
                             waist = it.waistCm,
                             hips = it.hipsCm,
                             forearms = it.forearmsCm,
-                            calf = it.calfCm
+                            calf = it.calfCm,
+                            sleepIntervalList = it.sleepIntervalList
                         )
                     } ?: DailyVitals()
                 }
@@ -205,7 +206,8 @@ class UserLogRepositoryIml @Inject constructor(
             waistCm = dailyVitals.waist,
             hipsCm = dailyVitals.hips,
             forearmsCm = dailyVitals.forearms,
-            calfCm = dailyVitals.calf
+            calfCm = dailyVitals.calf,
+            sleepIntervalList = dailyVitals.sleepIntervalList
         )
 
         firestore.collection("users")
