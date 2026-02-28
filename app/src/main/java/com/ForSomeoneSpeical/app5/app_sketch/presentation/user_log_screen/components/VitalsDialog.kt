@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
@@ -178,74 +179,63 @@ fun VitalsDialog(
                 }
 
                 item {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-
-                        //Add SleepInterval Button
-                        Button(
-                            onClick = {
-                              sleepIntervalsList = sleepIntervalsList + SleepInterval()
-                            }
-                        ) {Text("Add Sleep Interval") }
-
-                        sleepIntervalsList.forEach { interval ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth().background(Color.Gray),
-                                horizontalArrangement = Arrangement.SpaceBetween
-
-                            ){
-                                //Start Time
-                                TextButton(
-                                    onClick = {
-                                        val now = Calendar.getInstance()
-                                        TimePickerDialog(
-                                            context,
-                                            {_, hour, minute ->
-                                                val startString = "%02d:%02d".format(hour, minute)
-                                                sleepIntervalsList = sleepIntervalsList.map {
-                                                    if(it.id == interval.id) it.copy(start = startString) else it
-                                                }
-                                            },
-                                            now.get(Calendar.HOUR_OF_DAY),
-                                            now.get(Calendar.MINUTE),
-                                            true
-                                        ).show()
-                                    }
-                                ) { Text(interval.start) }
-
-                                IconButton(onClick = {
-                                    sleepIntervalsList = sleepIntervalsList.filter { it.id == interval.id  }
-                                }) { Icon(Icons.Default.Delete, contentDescription = null, tint = Color.Red ) }
-
-                                //End Time
-                                TextButton(
-                                    onClick = {
-                                        val now = Calendar.getInstance()
-                                        TimePickerDialog(
-                                            context,
-                                            {_, hour, minute ->
-                                                val endString = "%02d:%02d".format(hour, minute)
-                                                sleepIntervalsList = sleepIntervalsList.map {
-                                                    if(it.id == interval.id) it.copy(end = endString) else it
-                                                }
-                                            },
-                                            now.get(Calendar.HOUR_OF_DAY),
-                                            now.get(Calendar.MINUTE),
-                                            true
-                                        ).show()
-                                    }
-                                ) { Text(interval.end) }
-                            }
+                    //Add SleepInterval Button
+                    Button(
+                        onClick = {
+                            sleepIntervalsList = sleepIntervalsList + SleepInterval()
                         }
-
-
-                    }
+                    ) { Text("Add Sleep Interval") }
                 }
 
+                items(sleepIntervalsList, key = {it.id}){ interval ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth().background(Color.Gray),
+                        horizontalArrangement = Arrangement.SpaceBetween
 
+                    ){
+                        //Start Time
+                        TextButton(
+                            onClick = {
+                                val now = Calendar.getInstance()
+                                TimePickerDialog(
+                                    context,
+                                    {_, hour, minute ->
+                                        val startString = "%02d:%02d".format(hour, minute)
+                                        sleepIntervalsList = sleepIntervalsList.map {
+                                            if(it.id == interval.id) it.copy(start = startString) else it
+                                        }
+                                    },
+                                    now.get(Calendar.HOUR_OF_DAY),
+                                    now.get(Calendar.MINUTE),
+                                    true
+                                ).show()
+                            }
+                        ) { Text(interval.start) }
 
+                        IconButton(onClick = {
+                            sleepIntervalsList = sleepIntervalsList.filter { it.id != interval.id  }
+                        }) { Icon(Icons.Default.Delete, contentDescription = null, tint = Color.Red ) }
+
+                        //End Time
+                        TextButton(
+                            onClick = {
+                                val now = Calendar.getInstance()
+                                TimePickerDialog(
+                                    context,
+                                    {_, hour, minute ->
+                                        val endString = "%02d:%02d".format(hour, minute)
+                                        sleepIntervalsList = sleepIntervalsList.map {
+                                            if(it.id == interval.id) it.copy(end = endString) else it
+                                        }
+                                    },
+                                    now.get(Calendar.HOUR_OF_DAY),
+                                    now.get(Calendar.MINUTE),
+                                    true
+                                ).show()
+                            }
+                        ) { Text(interval.end) }
+                    }
+                }
 
             }
         },
