@@ -1,6 +1,7 @@
 package com.ForSomeoneSpeical.app5.app_sketch.domain.model
 
 import androidx.compose.material3.Text
+import java.util.UUID
 
 data class USDAFoodItem(
     val fdcId : Int = 0,
@@ -111,7 +112,17 @@ data class DailyVitalsDTO(
     val hipsCm : Double? = null,
     val forearmsCm : Double? = null,
     val calfCm : Double? = null,
+
+    val sleepIntervalList : List<SleepInterval> = emptyList()
 )
+
+data class SleepInterval(
+    val id : String = UUID.randomUUID().toString(),
+    val start : String = "",
+    val end : String = "",
+)
+
+
 
 data class DailyVitals(
     val bodyWeight : Double? = null,
@@ -126,4 +137,6 @@ data class DailyVitals(
     val hips : Double? = null,
     val forearms : Double? = null,
     val calf : Double? = null,
+
+    val sleepIntervalList : List<SleepInterval> = emptyList()
 )
