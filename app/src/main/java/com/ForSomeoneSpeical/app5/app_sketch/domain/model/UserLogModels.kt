@@ -118,8 +118,10 @@ data class DailyVitalsDTO(
 
 data class SleepInterval(
     val id : String = UUID.randomUUID().toString(),
-    val start : String = "",
-    val end : String = "",
+    val startTime : String = "",
+    val startDate : String = "",
+    val endTime : String = "",
+    val endDate : String = ""
 )
 
 

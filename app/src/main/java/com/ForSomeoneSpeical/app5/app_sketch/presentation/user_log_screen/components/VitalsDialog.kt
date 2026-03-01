@@ -1,6 +1,7 @@
 package com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components
 
 
+import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -192,7 +193,28 @@ fun VitalsDialog(
                         modifier = Modifier.fillMaxWidth().background(Color.Gray),
                         horizontalArrangement = Arrangement.SpaceBetween
 
-                    ){
+                    )
+                    {
+                        //Start Date
+                        TextButton(
+                            onClick = {
+                                val now= Calendar.getInstance()
+
+                                DatePickerDialog(
+                                    context,
+                                    { _, year, month, day ->
+                                        val startDate = "%02d/%02d%4d".format(day, month + 1, year)
+                                        sleepIntervalsList = sleepIntervalsList.map {
+                                            if(interval.id == it.id) it.copy(startDate = startDate) else it
+                                        }
+                                    },
+                                    now.get(Calendar.YEAR),
+                                    now.get(Calendar.MONTH),
+                                    now.get(Calendar.DAY_OF_MONTH)
+                                ).show()
+
+                            }
+                        ) { Text(interval.startDate.ifEmpty { "Start Date" })}
                         //Start Time
                         TextButton(
                             onClick = {
@@ -200,9 +222,9 @@ fun VitalsDialog(
                                 TimePickerDialog(
                                     context,
                                     {_, hour, minute ->
-                                        val startString = "%02d:%02d".format(hour, minute)
+                                        val startTime = "%02d:%02d".format(hour, minute)
                                         sleepIntervalsList = sleepIntervalsList.map {
-                                            if(it.id == interval.id) it.copy(start = startString) else it
+                                            if(it.id == interval.id) it.copy(startTime = startTime) else it
                                         }
                                     },
                                     now.get(Calendar.HOUR_OF_DAY),
@@ -210,12 +232,41 @@ fun VitalsDialog(
                                     true
                                 ).show()
                             }
-                        ) { Text(interval.start) }
+                        ) { Text(interval.startTime.ifEmpty { "Start Time" }) }
 
-                        IconButton(onClick = {
+
+
+                        //Delete Button
+                        IconButton(
+                            onClick = {
                             sleepIntervalsList = sleepIntervalsList.filter { it.id != interval.id  }
-                        }) { Icon(Icons.Default.Delete, contentDescription = null, tint = Color.Red ) }
+                        }
+                        )
+                        {
+                            Icon(Icons.Default.Delete, contentDescription = null, tint = Color.Red)
+                        }
 
+
+                        //End Date
+                        TextButton(
+                            onClick = {
+                                val now= Calendar.getInstance()
+
+                                DatePickerDialog(
+                                    context,
+                                    { _, year, month, day ->
+                                        val endDate = "%02d/%02d%4d".format(day, month + 1, year)
+                                        sleepIntervalsList = sleepIntervalsList.map {
+                                            if(interval.id == it.id) it.copy(endDate = endDate) else it
+                                        }
+                                    },
+                                    now.get(Calendar.YEAR),
+                                    now.get(Calendar.MONTH),
+                                    now.get(Calendar.DAY_OF_MONTH)
+                                ).show()
+
+                            }
+                        ) { Text(interval.endDate.ifEmpty { "End Date" })}
                         //End Time
                         TextButton(
                             onClick = {
@@ -223,9 +274,9 @@ fun VitalsDialog(
                                 TimePickerDialog(
                                     context,
                                     {_, hour, minute ->
-                                        val endString = "%02d:%02d".format(hour, minute)
+                                        val endTime = "%02d:%02d".format(hour, minute)
                                         sleepIntervalsList = sleepIntervalsList.map {
-                                            if(it.id == interval.id) it.copy(end = endString) else it
+                                            if(it.id == interval.id) it.copy(endTime = endTime) else it
                                         }
                                     },
                                     now.get(Calendar.HOUR_OF_DAY),
@@ -233,7 +284,7 @@ fun VitalsDialog(
                                     true
                                 ).show()
                             }
-                        ) { Text(interval.end) }
+                        ) { Text(interval.endTime.ifEmpty { "End Time" }) }
                     }
                 }
 
@@ -242,7 +293,7 @@ fun VitalsDialog(
         confirmButton = {
             Button(onClick = {
                 val filteredSleepIntervals = sleepIntervalsList.mapNotNull {
-                    if(it.start.isNotEmpty() && it.end.isNotEmpty()) it else null
+                    if(it.startTime.isNotEmpty() && it.endTime.isNotEmpty() && it.startDate.isNotEmpty() && it.endDate.isNotEmpty()) it else null
                 }
                 val updatedDailyVitals = dailyVitals.copy(
                     bodyWeight = bodyWeight.toDoubleOrNull(),
