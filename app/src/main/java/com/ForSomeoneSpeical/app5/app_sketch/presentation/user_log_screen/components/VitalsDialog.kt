@@ -189,102 +189,120 @@ fun VitalsDialog(
                 }
 
                 items(sleepIntervalsList, key = {it.id}){ interval ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth().background(Color.Gray),
-                        horizontalArrangement = Arrangement.SpaceBetween
-
+                    Column(
+                        modifier = Modifier.fillMaxWidth().background(Color.Gray)
                     )
                     {
-                        //Start Date
-                        TextButton(
-                            onClick = {
-                                val now= Calendar.getInstance()
 
-                                DatePickerDialog(
-                                    context,
-                                    { _, year, month, day ->
-                                        val startDate = "%02d/%02d%4d".format(day, month + 1, year)
-                                        sleepIntervalsList = sleepIntervalsList.map {
-                                            if(interval.id == it.id) it.copy(startDate = startDate) else it
-                                        }
-                                    },
-                                    now.get(Calendar.YEAR),
-                                    now.get(Calendar.MONTH),
-                                    now.get(Calendar.DAY_OF_MONTH)
-                                ).show()
+                        //Time + Delete
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
 
-                            }
-                        ) { Text(interval.startDate.ifEmpty { "Start Date" })}
-                        //Start Time
-                        TextButton(
-                            onClick = {
-                                val now = Calendar.getInstance()
-                                TimePickerDialog(
-                                    context,
-                                    {_, hour, minute ->
-                                        val startTime = "%02d:%02d".format(hour, minute)
-                                        sleepIntervalsList = sleepIntervalsList.map {
-                                            if(it.id == interval.id) it.copy(startTime = startTime) else it
-                                        }
-                                    },
-                                    now.get(Calendar.HOUR_OF_DAY),
-                                    now.get(Calendar.MINUTE),
-                                    true
-                                ).show()
-                            }
-                        ) { Text(interval.startTime.ifEmpty { "Start Time" }) }
-
-
-
-                        //Delete Button
-                        IconButton(
-                            onClick = {
-                            sleepIntervalsList = sleepIntervalsList.filter { it.id != interval.id  }
-                        }
                         )
                         {
-                            Icon(Icons.Default.Delete, contentDescription = null, tint = Color.Red)
+                                //Start Time
+                                TextButton(
+                                    onClick = {
+                                        val now = Calendar.getInstance()
+                                        TimePickerDialog(
+                                            context,
+                                            {_, hour, minute ->
+                                                val startTime = "%02d:%02d".format(hour, minute)
+                                                sleepIntervalsList = sleepIntervalsList.map {
+                                                    if(it.id == interval.id) it.copy(startTime = startTime) else it
+                                                }
+                                            },
+                                            now.get(Calendar.HOUR_OF_DAY),
+                                            now.get(Calendar.MINUTE),
+                                            true
+                                        ).show()
+                                    }
+                                ) { Text(interval.startTime.ifEmpty { "Start Time" }) }
+
+                                //Delete Button
+                                IconButton(
+                                    onClick = {
+                                        sleepIntervalsList = sleepIntervalsList.filter { it.id != interval.id  }
+                                    }
+                                )
+                                {
+                                    Icon(Icons.Default.Delete, contentDescription = null, tint = Color.Red)
+                                }
+
+                                //End Time
+                                TextButton(
+                                    onClick = {
+                                        val now = Calendar.getInstance()
+                                        TimePickerDialog(
+                                            context,
+                                            {_, hour, minute ->
+                                                val endTime = "%02d:%02d".format(hour, minute)
+                                                sleepIntervalsList = sleepIntervalsList.map {
+                                                    if(it.id == interval.id) it.copy(endTime = endTime) else it
+                                                }
+                                            },
+                                            now.get(Calendar.HOUR_OF_DAY),
+                                            now.get(Calendar.MINUTE),
+                                            true
+                                        ).show()
+                                    }
+                                ) { Text(interval.endTime.ifEmpty { "End Time" }) }
+
                         }
 
+                        //Date
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
 
-                        //End Date
-                        TextButton(
-                            onClick = {
-                                val now= Calendar.getInstance()
+                        )
+                        {
+                            //Start Date
+                            TextButton(
+                                onClick = {
+                                    val now= Calendar.getInstance()
 
-                                DatePickerDialog(
-                                    context,
-                                    { _, year, month, day ->
-                                        val endDate = "%02d/%02d%4d".format(day, month + 1, year)
-                                        sleepIntervalsList = sleepIntervalsList.map {
-                                            if(interval.id == it.id) it.copy(endDate = endDate) else it
-                                        }
-                                    },
-                                    now.get(Calendar.YEAR),
-                                    now.get(Calendar.MONTH),
-                                    now.get(Calendar.DAY_OF_MONTH)
-                                ).show()
+                                    DatePickerDialog(
+                                        context,
+                                        { _, year, month, day ->
+                                            val startDate = "%02d/%02d%4d".format(day, month + 1, year)
+                                            sleepIntervalsList = sleepIntervalsList.map {
+                                                if(interval.id == it.id) it.copy(startDate = startDate) else it
+                                            }
+                                        },
+                                        now.get(Calendar.YEAR),
+                                        now.get(Calendar.MONTH),
+                                        now.get(Calendar.DAY_OF_MONTH)
+                                    ).show()
 
-                            }
-                        ) { Text(interval.endDate.ifEmpty { "End Date" })}
-                        //End Time
-                        TextButton(
-                            onClick = {
-                                val now = Calendar.getInstance()
-                                TimePickerDialog(
-                                    context,
-                                    {_, hour, minute ->
-                                        val endTime = "%02d:%02d".format(hour, minute)
-                                        sleepIntervalsList = sleepIntervalsList.map {
-                                            if(it.id == interval.id) it.copy(endTime = endTime) else it
-                                        }
-                                    },
-                                    now.get(Calendar.HOUR_OF_DAY),
-                                    now.get(Calendar.MINUTE),
-                                    true
-                                ).show()
-                            }
-                        ) { Text(interval.endTime.ifEmpty { "End Time" }) }
+                                }
+                            ) { Text(interval.startDate.ifEmpty { "Start Date" })}
+
+
+                            //End Date
+                            TextButton(
+                                    onClick = {
+                                        val now= Calendar.getInstance()
+
+                                        DatePickerDialog(
+                                            context,
+                                            { _, year, month, day ->
+                                                val endDate = "%02d/%02d%4d".format(day, month + 1, year)
+                                                sleepIntervalsList = sleepIntervalsList.map {
+                                                    if(interval.id == it.id) it.copy(endDate = endDate) else it
+                                                }
+                                            },
+                                            now.get(Calendar.YEAR),
+                                            now.get(Calendar.MONTH),
+                                            now.get(Calendar.DAY_OF_MONTH)
+                                        ).show()
+
+                                    }
+                                ) { Text(interval.endDate.ifEmpty { "End Date" })}
+
+                        }
+
                     }
                 }
 
