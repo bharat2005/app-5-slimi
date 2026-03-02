@@ -266,7 +266,7 @@ fun VitalsDialog(
                                     DatePickerDialog(
                                         context,
                                         { _, year, month, day ->
-                                            val startDate = "%02d/%02d%4d".format(day, month + 1, year)
+                                            val startDate = "%02d/%02d/%4d".format(day, month + 1, year)
                                             sleepIntervalsList = sleepIntervalsList.map {
                                                 if(interval.id == it.id) it.copy(startDate = startDate) else it
                                             }
@@ -288,7 +288,7 @@ fun VitalsDialog(
                                         DatePickerDialog(
                                             context,
                                             { _, year, month, day ->
-                                                val endDate = "%02d/%02d%4d".format(day, month + 1, year)
+                                                val endDate = "%02d/%02d/%4d".format(day, month + 1, year)
                                                 sleepIntervalsList = sleepIntervalsList.map {
                                                     if(interval.id == it.id) it.copy(endDate = endDate) else it
                                                 }

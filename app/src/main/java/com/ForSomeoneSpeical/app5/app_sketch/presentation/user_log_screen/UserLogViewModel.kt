@@ -308,24 +308,24 @@ class UserLogViewModel @Inject constructor(
 
 
 
-    //Repository Interactions for Vitals Dialog
-    fun onUpdateVitals(dailyVitals: DailyVitals){
-        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE).toString()
-
-        onVitalsDialogClose()
-        _uiState.update { it.copy(isLoading = true) }
-        viewModelScope.launch {
-            runCatching {
-                userLogRepository.updateDailyVitals(dateString, dailyVitals)
-            }.onSuccess {
-                _uiState.update { it.copy( isLoading = false) }
-            }.onFailure { e ->
-                onVitalsDialogClose()
-                _uiState.update { it.copy(errorMessage = e.message, isLoading = false) }
-            }
-        }
-
-    }
+//    //Repository Interactions for Vitals Dialog
+//    fun onUpdateVitals(dailyVitals: DailyVitals){
+//        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE).toString()
+//
+//        onVitalsDialogClose()
+//        _uiState.update { it.copy(isLoading = true) }
+//        viewModelScope.launch {
+//            runCatching {
+//                userLogRepository.updateDailyVitals(dateString, dailyVitals)
+//            }.onSuccess {
+//                _uiState.update { it.copy( isLoading = false) }
+//            }.onFailure { e ->
+//                onVitalsDialogClose()
+//                _uiState.update { it.copy(errorMessage = e.message, isLoading = false) }
+//            }
+//        }
+//
+//    }
 
 
 
