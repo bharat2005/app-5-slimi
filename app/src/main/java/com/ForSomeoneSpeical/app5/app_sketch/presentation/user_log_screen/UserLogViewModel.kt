@@ -94,15 +94,15 @@ class UserLogViewModel @Inject constructor(
 
 
     //Local State Updates for Date Selector
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun updateDate(offset : Long){
-        val newDate = uiState.value.currentDate.plusDays(offset)
-        _uiState.update { it.copy(currentDate = newDate, loggedFoodForDay = emptyList(), isLoading = true) }
-
-        listenForLoggedVitals(newDate)
-        listenForLoggedFoodItems(newDate)
-        listenForLoggedExercises(newDate)
-    }
+//    @RequiresApi(Build.VERSION_CODES.O)
+//    fun updateDate(offset : Long){
+//        val newDate = uiState.value.currentDate.plusDays(offset)
+//        _uiState.update { it.copy(currentDate = newDate, loggedFoodForDay = emptyList(), isLoading = true) }
+//
+//        listenForLoggedVitals(newDate)
+//        listenForLoggedFoodItems(newDate)
+//        listenForLoggedExercises(newDate)
+//    }
 
 
 
@@ -308,24 +308,24 @@ class UserLogViewModel @Inject constructor(
 
 
 
-//    //Repository Interactions for Vitals Dialog
-//    fun onUpdateVitals(dailyVitals: DailyVitals){
-//        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE).toString()
-//
-//        onVitalsDialogClose()
-//        _uiState.update { it.copy(isLoading = true) }
-//        viewModelScope.launch {
-//            runCatching {
-//                userLogRepository.updateDailyVitals(dateString, dailyVitals)
-//            }.onSuccess {
-//                _uiState.update { it.copy( isLoading = false) }
-//            }.onFailure { e ->
-//                onVitalsDialogClose()
-//                _uiState.update { it.copy(errorMessage = e.message, isLoading = false) }
-//            }
-//        }
-//
-//    }
+    //Repository Interactions for Vitals Dialog
+    fun onUpdateVitals(dailyVitals: DailyVitals){
+        val dateString = uiState.value.currentDate.format(DateTimeFormatter.ISO_DATE).toString()
+
+        onVitalsDialogClose()
+        _uiState.update { it.copy(isLoading = true) }
+        viewModelScope.launch {
+            runCatching {
+                userLogRepository.updateDailyVitals(dateString, dailyVitals)
+            }.onSuccess {
+                _uiState.update { it.copy( isLoading = false) }
+            }.onFailure { e ->
+                onVitalsDialogClose()
+                _uiState.update { it.copy(errorMessage = e.message, isLoading = false) }
+            }
+        }
+
+    }
 
 
 
