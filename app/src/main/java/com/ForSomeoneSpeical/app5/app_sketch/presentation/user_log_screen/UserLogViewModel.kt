@@ -94,15 +94,15 @@ class UserLogViewModel @Inject constructor(
 
 
     //Local State Updates for Date Selector
-//    @RequiresApi(Build.VERSION_CODES.O)
-//    fun updateDate(offset : Long){
-//        val newDate = uiState.value.currentDate.plusDays(offset)
-//        _uiState.update { it.copy(currentDate = newDate, loggedFoodForDay = emptyList(), isLoading = true) }
-//
-//        listenForLoggedVitals(newDate)
-//        listenForLoggedFoodItems(newDate)
-//        listenForLoggedExercises(newDate)
-//    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun updateDate(offset : Long){
+        val newDate = uiState.value.currentDate.plusDays(offset)
+        _uiState.update { it.copy(currentDate = newDate, loggedFoodForDay = emptyList(), isLoading = true) }
+
+        listenForLoggedVitals(newDate)
+        listenForLoggedFoodItems(newDate)
+        listenForLoggedExercises(newDate)
+    }
 
 
 
