@@ -35,6 +35,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Exercise
 import com.ForSomeoneSpeical.app5.app_sketch.domain.model.Meal
 import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.components.DateSelector
@@ -48,6 +49,7 @@ import com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen.compon
 @Composable
 fun UserLogScreen(
     viewModel: UserLogViewModel = hiltViewModel(),
+    onNavigateToCalendar : (dateString : String) -> Unit
 ) {
 
     //Global
@@ -86,7 +88,10 @@ fun UserLogScreen(
                 item {
                     DateSelector(
                         onDateUpdate = viewModel::updateDate,
-                        currentDate = uiState.currentDate
+                        currentDate = uiState.currentDate,
+                        onCalendarClick = {
+                            onNavigateToCalendar(uiState.currentDate.toString())
+                        }
                     )
                 }
 

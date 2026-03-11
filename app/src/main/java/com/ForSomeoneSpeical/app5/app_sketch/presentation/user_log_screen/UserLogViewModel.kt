@@ -3,6 +3,7 @@ package com.ForSomeoneSpeical.app5.app_sketch.presentation.user_log_screen
 import android.icu.util.LocaleData
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ForSomeoneSpeical.app5.app_sketch.data.local.ExerciseDatabase
@@ -74,7 +75,8 @@ data class UserLogState @RequiresApi(Build.VERSION_CODES.O) constructor(
 @HiltViewModel
 class UserLogViewModel @Inject constructor(
     private val userLogRepository: UserLogRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     val userDataState = userRepository.userDataState
 
@@ -91,6 +93,7 @@ class UserLogViewModel @Inject constructor(
         mapExerciseList(ExerciseDatabase.exercises, weight)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    val currentDate = savedStateHandle.getStateFlow("date_string", null)
 
 
     //Local State Updates for Date Selector
@@ -108,27 +111,26 @@ class UserLogViewModel @Inject constructor(
 
     //Local State Updates
         //---Meal Dialog
-//    @RequiresApi(Build.VERSION_CODES.O)
-//    fun onMealDialogOpen(meal : Meal){
-//        _uiState.update { it.copy(currentMealType = meal, showMealDialog = true) }
-//    }
-//    @RequiresApi(Build.VERSION_CODES.O)
-//    fun onMealDialogClose(){
-//        _uiState.update { it.copy(
-//            showMealDialog = false,
-//            selectedFoodCategory = FoodCategory.FOUNDATION,
-//             isFoodSearching = false,
-//             searchedFoodItems = USDAResponse(emptyList()),
-//        ) }
-//    }
-//    @RequiresApi(Build.VERSION_CODES.O)
-//    fun updateSelectedCategory(category: FoodCategory){
-//        _uiState.update { it.copy(selectedFoodCategory = category) }
-//    }
-//        //---Error Handling
-//    fun clearError(){
-//        _uiState.update { it.copy(errorMessage = null) }
-//    }
+    @RequiresApi(Build.VERSION_CODES.O)   fun onMealDialogOpen(meal : Meal){
+        _uiState.update { it.copy(currentMealType = meal, showMealDialog = true) }
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun onMealDialogClose(){
+        _uiState.update { it.copy(
+            showMealDialog = false,
+            selectedFoodCategory = FoodCategory.FOUNDATION,
+             isFoodSearching = false,
+             searchedFoodItems = USDAResponse(emptyList()),
+        ) }
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun updateSelectedCategory(category: FoodCategory){
+        _uiState.update { it.copy(selectedFoodCategory = category) }
+    }
+        //---Error Handling
+    fun clearError(){
+        _uiState.update { it.copy(errorMessage = null) }
+    }
         //---Exercise Dialog
     fun onExerciseDialogOpen(){
         _uiState.update { it.copy(showExerciseDialog = true) }
