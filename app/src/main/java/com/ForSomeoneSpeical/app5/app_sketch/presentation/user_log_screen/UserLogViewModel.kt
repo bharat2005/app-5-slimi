@@ -109,20 +109,20 @@ class UserLogViewModel @Inject constructor(
 
 
 
-    //Local State Updates
-        //---Meal Dialog
-    @RequiresApi(Build.VERSION_CODES.O)   fun onMealDialogOpen(meal : Meal){
-        _uiState.update { it.copy(currentMealType = meal, showMealDialog = true) }
-    }
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun onMealDialogClose(){
-        _uiState.update { it.copy(
-            showMealDialog = false,
-            selectedFoodCategory = FoodCategory.FOUNDATION,
-             isFoodSearching = false,
-             searchedFoodItems = USDAResponse(emptyList()),
-        ) }
-    }
+//    //Local State Updates
+//        //---Meal Dialog
+//    @RequiresApi(Build.VERSION_CODES.O)   fun onMealDialogOpen(meal : Meal){
+//        _uiState.update { it.copy(currentMealType = meal, showMealDialog = true) }
+//    }
+//    @RequiresApi(Build.VERSION_CODES.O)
+//    fun onMealDialogClose(){
+//        _uiState.update { it.copy(
+//            showMealDialog = false,
+//            selectedFoodCategory = FoodCategory.FOUNDATION,
+//             isFoodSearching = false,
+//             searchedFoodItems = USDAResponse(emptyList()),
+//        ) }
+//    }
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateSelectedCategory(category: FoodCategory){
         _uiState.update { it.copy(selectedFoodCategory = category) }
